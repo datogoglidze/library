@@ -17,3 +17,6 @@ lint:
 
 test:
 	poetry run pytest --lf --cov
+
+unit-test-ci:
+	poetry run pytest tests/unit
