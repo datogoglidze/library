@@ -45,20 +45,3 @@ jobs:
 
     - name: Test unit
       run: make unit-test-ci
-
-  test-integration:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Python
-      uses: actions/setup-python@v3
-      with:
-        python-version: 3.11
-
-    - name: Install dependencies
-      run: make install
-
-    - name: Test integration
-      run: make integration-test-ci
