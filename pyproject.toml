@@ -1,0 +1,50 @@
+[tool.poetry]
+name = "library"
+version = "0.1.0"
+description = "Add books, create user accounts and manage renting"
+authors = ["Schwifter <d.goglidze@sangu.edu.ge>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+httpx = "0.25.*"
+fastapi = "0.103.2"
+uvicorn = "0.23.*"
+alembic = "1.*"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
+pytest-cov = "*"
+coverage = "*"
+faker = "*"
+hypothesis = "*"
+
+[tool.poetry.group.lint.dependencies]
+black = "*"
+mypy = "*"
+ruff = "*"
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+strict = true
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+
+select = ["E", "F", "I"]
+ignore = []
+fixable = ["A", "B", "C", "D", "E", "F", "I"]
+unfixable = []
+
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".ruff_cache",
+    "venv",
+]
+
+[tool.ruff.mccabe]
+max-complexity = 10
+
