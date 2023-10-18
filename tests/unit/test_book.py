@@ -5,7 +5,7 @@ from firstlib.book import app, shelf
 client = TestClient(app)
 
 
-def test_create_book():
+def test_create_book() -> None:
     response = client.post(
         "/books",
         json={
@@ -23,7 +23,7 @@ def test_create_book():
     shelf.clear()
 
 
-def test_read_book():
+def test_read_book() -> None:
     client.post(
         "/books",
         json={

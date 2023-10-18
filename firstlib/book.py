@@ -16,17 +16,17 @@ shelf = []
 
 
 @app.post("/books", status_code=201)
-def create_book(book: Book):
-    book = {
+def create_book(book: Book) -> dict[str, str]:
+    book_info = {
         "title": book.title,
         "author": book.author,
     }
 
-    shelf.append(book)
+    shelf.append(book_info)
 
-    return book
+    return book_info
 
 
 @app.get("/books", status_code=200)
-def show_shelf():
+def show_shelf() -> dict[str, list[dict[str, str]]]:
     return {"shelf": shelf}
