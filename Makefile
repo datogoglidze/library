@@ -20,3 +20,6 @@ test:
 
 unit-test-ci:
 	poetry run pytest tests/unit
+
+run:
+	uvicorn firstlib.main:app --reload
