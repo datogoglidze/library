@@ -7,13 +7,13 @@ update:
 	poetry update
 
 format:
-	poetry run black wms tests
-	poetry run ruff --fix wms tests
+	poetry run black firstlib tests
+	poetry run ruff --fix firstlib tests
 
 lint:
-	poetry run black --check wms tests
-	poetry run ruff check wms tests
-	poetry run mypy wms tests
+	poetry run black --check firstlib tests
+	poetry run ruff check firstlib tests
+	poetry run mypy firstlib tests
 
 test:
 	poetry run pytest --lf --cov
