@@ -42,5 +42,5 @@ def create_book(book: Book) -> JsonDict:
 
 
 @app.get("/books", status_code=200)
-def show_shelf() -> dict[str, list[JsonDict]]:
-    return {"shelf": shelf}
+def show_shelf() -> list[JsonDict]:
+    return shelf

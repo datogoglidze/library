@@ -27,4 +27,4 @@ def test_read_book() -> None:
     response = client.get("/books")
 
     assert response.status_code == 200
-    assert response.json() == {"shelf": [book_info]}
+    assert response.json() == [book_info]
