@@ -23,7 +23,7 @@ def test_create_book() -> None:
     assert response.json() == book_info
 
 
-def test_read_book() -> None:
+def test_read_all_books() -> None:
     response = client.get("/books")
 
     assert response.status_code == 200
