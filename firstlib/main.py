@@ -1,4 +1,4 @@
-from firstlib.book import app
+from firstlib.api.book import app
 
 if __name__ == "__main__":
     import uvicorn

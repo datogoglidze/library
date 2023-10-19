@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from firstlib.book import app, shelf
+from firstlib.api.book import app, shelf
 
 client = TestClient(app)
 
