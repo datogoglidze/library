@@ -22,14 +22,9 @@ def test_create_book() -> None:
     assert response.status_code == 201, response.json()
     assert response.json() == book_info
 
-    shelf.clear()
-
 
 def test_read_book() -> None:
-    client.post("/books", json=book_info)
     response = client.get("/books")
 
     assert response.status_code == 200
     assert response.json() == {"shelf": [book_info]}
-
-    shelf.clear()
