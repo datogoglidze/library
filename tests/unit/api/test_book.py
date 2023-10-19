@@ -1,6 +1,4 @@
-from uuid import uuid4
 from faker import Faker
-
 from fastapi.testclient import TestClient
 
 from firstlib.api.book import app, shelf
