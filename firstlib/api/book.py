@@ -21,9 +21,11 @@ class Book(BaseModel):
 
 shelf = []
 
+JsonDict = dict[str, Any]
+
 
 @app.post("/books", status_code=201)
-def create_book(book: Book) -> dict[str, Any]:
+def create_book(book: Book) -> JsonDict:
     book_info = {
         "book_id": book.book_id,
         "title": book.title,
@@ -40,5 +42,5 @@ def create_book(book: Book) -> dict[str, Any]:
 
 
 @app.get("/books", status_code=200)
-def show_shelf() -> dict[str, list[dict[str, Any]]]:
+def show_shelf() -> dict[str, list[JsonDict]]:
     return {"shelf": shelf}
