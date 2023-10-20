@@ -38,9 +38,7 @@ def create_book(book: Book) -> JsonDict:
     for each_book in shelf:
         if (
             each_book["book_id"] == book_info["book_id"]
-            and each_book["title"] == book_info["title"]
-            and each_book["author"] == book_info["author"]
-            and each_book["isbn"] == book_info["isbn"]
+            and each_book["publisher"] == book_info["publisher"]
         ):
             raise HTTPException(status_code=409, detail="Book already exists")
 
