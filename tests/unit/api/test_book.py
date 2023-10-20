@@ -49,7 +49,7 @@ def test_read_one_book() -> None:
     shelf.clear()
 
 
-def test_not_read_missing():
+def test_not_read_missing() -> None:
     book = create_book(Faker().uuid4())
     client.post("/books", json=book)
 
