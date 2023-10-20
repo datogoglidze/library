@@ -21,13 +21,15 @@ def test_create_book() -> None:
 
 
 def test_read_all_books() -> None:
-    book = create_book(Faker().uuid4())
-    client.post("/books", json=book)
+    first_book = create_book(Faker().uuid4())
+    second_book = create_book(Faker().uuid4())
+    client.post("/books", json=first_book)
+    client.post("/books", json=second_book)
 
     response = client.get("/books")
 
     assert response.status_code == 200
-    assert response.json() == [book]
+    assert response.json() == [first_book, second_book]
 
     shelf.clear()
 
