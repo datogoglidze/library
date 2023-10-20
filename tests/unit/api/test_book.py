@@ -61,6 +61,18 @@ def test_not_read_missing() -> None:
     shelf.clear()
 
 
+def test_should_not_add_existing() -> None:
+    book = create_book(Faker().uuid4())
+    client.post("/books", json=book)
+
+    response = client.post("/books", json=book)
+
+    assert response.status_code == 409
+    assert response.json()["detail"] == "Book already exists"
+
+    shelf.clear()
+
+
 def create_book(uuid: UUID) -> dict[str, Any]:
     return {
         "book_id": uuid,

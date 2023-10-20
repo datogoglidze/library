@@ -1,4 +1,3 @@
-import uuid
 from dataclasses import dataclass
 from typing import Any
 from uuid import UUID
@@ -27,7 +26,7 @@ shelf: list[JsonDict] = []
 @app.post("/books", status_code=201)
 def create_book(book: Book) -> JsonDict:
     book_info = {
-        "book_id": uuid.uuid4(),
+        "book_id": book.book_id,
         "title": book.title,
         "author": book.author,
         "isbn": book.isbn,
@@ -35,6 +34,15 @@ def create_book(book: Book) -> JsonDict:
         "total_pages": book.total_pages,
         "year": book.year,
     }
+
+    for each_book in shelf:
+        if (
+            each_book["book_id"] == book_info["book_id"]
+            and each_book["title"] == book_info["title"]
+            and each_book["author"] == book_info["author"]
+            and each_book["isbn"] == book_info["isbn"]
+        ):
+            raise HTTPException(status_code=409, detail="Book already exists")
 
     shelf.append(book_info)
 
