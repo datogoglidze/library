@@ -1,3 +1,4 @@
+import uuid
 from dataclasses import dataclass
 from typing import Any
 from uuid import UUID
@@ -26,7 +27,7 @@ shelf: list[JsonDict] = []
 @app.post("/books", status_code=201)
 def create_book(book: Book) -> JsonDict:
     book_info = {
-        "book_id": book.book_id,
+        "book_id": uuid.uuid4(),
         "title": book.title,
         "author": book.author,
         "isbn": book.isbn,
