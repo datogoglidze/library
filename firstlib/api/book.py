@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Any
 from uuid import UUID
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -19,11 +19,12 @@ class Book(BaseModel):
     year: int
 
 
-shelf = []
+JsonDict = dict[str, Any]
+shelf: list[JsonDict] = []
 
 
 @app.post("/books", status_code=201)
-def create_book(book: Book) -> dict[str, Any]:
+def create_book(book: Book) -> JsonDict:
     book_info = {
         "book_id": book.book_id,
         "title": book.title,
@@ -40,5 +41,13 @@ def create_book(book: Book) -> dict[str, Any]:
 
 
 @app.get("/books", status_code=200)
-def show_shelf() -> dict[str, list[dict[str, Any]]]:
-    return {"shelf": shelf}
+def show_shelf() -> list[JsonDict]:
+    return shelf
+
+
+@app.get("/books/{book_id}", status_code=200)
+def show_one(book_id: UUID) -> JsonDict:
+    for book_info in shelf:
+        if book_info["book_id"] == book_id:
+            return book_info
+    raise HTTPException(status_code=404, detail="Book not found")
