@@ -1,19 +1,16 @@
-from dataclasses import dataclass
 from typing import Any
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-api = types_api = APIRouter(tags=["Types"])
+api = APIRouter(tags=["Books"])
 
 JsonDict = dict[str, Any]
 shelf: list[JsonDict] = []
 
 
-@dataclass
 class BookCreateRequest(BaseModel):
-    book_id: UUID
     title: str
     author: str
     isbn: str
@@ -22,23 +19,34 @@ class BookCreateRequest(BaseModel):
     year: int
 
 
-@api.post("", status_code=201)
-def create_book(book: BookCreateRequest) -> JsonDict:
+class BookCreateResponse(BaseModel):
+    id: UUID
+    title: str
+    author: str
+    isbn: str
+    publisher: str
+    total_pages: int
+    year: int
+
+
+@api.post(
+    "",
+    status_code=201,
+    response_model=BookCreateResponse,
+)
+def create_book(request: BookCreateRequest) -> JsonDict:
     book_info = {
-        "book_id": book.book_id,
-        "title": book.title,
-        "author": book.author,
-        "isbn": book.isbn,
-        "publisher": book.publisher,
-        "total_pages": book.total_pages,
-        "year": book.year,
+        "id": uuid4(),
+        "title": request.title,
+        "author": request.author,
+        "isbn": request.isbn,
+        "publisher": request.publisher,
+        "total_pages": request.total_pages,
+        "year": request.year,
     }
 
     for each_book in shelf:
-        if (
-            each_book["book_id"] == book_info["book_id"]
-            and each_book["publisher"] == book_info["publisher"]
-        ):
+        if each_book["publisher"] == book_info["publisher"]:
             raise HTTPException(status_code=409, detail="Book already exists")
 
     shelf.append(book_info)
@@ -51,9 +59,9 @@ def show_shelf() -> list[JsonDict]:
     return shelf
 
 
-@api.get("/{book_id}", status_code=200)
+@api.get("/{id}", status_code=200)
 def show_one(book_id: UUID) -> JsonDict:
     for book_info in shelf:
-        if book_info["book_id"] == book_id:
+        if book_info["id"] == book_id:
             return book_info
     raise HTTPException(status_code=404, detail="Book not found")
