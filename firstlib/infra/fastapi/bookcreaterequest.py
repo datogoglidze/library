@@ -7,6 +7,9 @@ from pydantic import BaseModel
 
 api = types_api = APIRouter(tags=["Types"])
 
+JsonDict = dict[str, Any]
+shelf: list[JsonDict] = []
+
 
 @dataclass
 class BookCreateRequest(BaseModel):
@@ -17,10 +20,6 @@ class BookCreateRequest(BaseModel):
     publisher: str
     total_pages: int
     year: int
-
-
-JsonDict = dict[str, Any]
-shelf: list[JsonDict] = []
 
 
 @api.post("", status_code=201)
