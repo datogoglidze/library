@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from fastapi import FastAPI
 
-from firstlib.infra.fastapi.book import api
+from firstlib.infra.fastapi.bookcreaterequest import api
 
 
 @dataclass

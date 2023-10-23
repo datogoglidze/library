@@ -9,7 +9,7 @@ api = types_api = APIRouter(tags=["Types"])
 
 
 @dataclass
-class Book(BaseModel):
+class BookCreateRequest(BaseModel):
     book_id: UUID
     title: str
     author: str
@@ -24,7 +24,7 @@ shelf: list[JsonDict] = []
 
 
 @api.post("", status_code=201)
-def create_book(book: Book) -> JsonDict:
+def create_book(book: BookCreateRequest) -> JsonDict:
     book_info = {
         "book_id": book.book_id,
         "title": book.title,
