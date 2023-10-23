@@ -27,9 +27,7 @@ class Fake:
 
 
 @dataclass
-class FakeOrder:
-    service: MagicMock
-
+class FakeBook:
     id: UUID = field(default_factory=uuid4)
     author: str = field(default_factory=uuid4)
     isbn: str = field(default_factory=uuid4)
