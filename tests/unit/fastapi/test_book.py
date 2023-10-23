@@ -1,11 +1,10 @@
 from unittest.mock import ANY
 
-import pytest
 from fastapi.testclient import TestClient
 
 from firstlib.infra.fastapi import FastApiConfig
 from firstlib.infra.fastapi.books import shelf
-from firstlib.infra.fastapi.fake import Fake
+from tests.unit.fastapi.fake import Fake
 
 fake = Fake()
 client = TestClient(FastApiConfig().setup())
@@ -39,17 +38,17 @@ def test_read_all_books() -> None:
     shelf.clear()
 
 
-@pytest.mark.skip
 def test_read_one_book() -> None:
     book_one = fake.book()
     book_two = fake.book()
     client.post("/books", json=book_one)
     client.post("/books", json=book_two)
+    known_book_id = client.get("/books").json()[0]["id"]
 
-    response = client.get(f"/books/{book_one['id']}")
+    response = client.get(f"/books/{known_book_id}")
 
     assert response.status_code == 200, response.json()
-    assert response.json() == book_one
+    assert response.json() == {"id": ANY, **book_one}
 
     shelf.clear()
 
