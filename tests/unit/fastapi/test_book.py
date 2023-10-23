@@ -55,14 +55,13 @@ def test_read_one_book() -> None:
     shelf.clear()
 
 
-@pytest.mark.skip
 def test_not_read_missing() -> None:
-    book = create_book()
+    book = fake.book()
     client.post("/books", json=book)
 
-    response = client.get(f"/books/{Faker().uuid4()}")
+    response = client.get(f"/books/{fake.uuid()}")
 
-    assert response.status_code == 404
+    assert response.status_code == 404, response.json()
     assert response.json()["detail"] == "Book not found"
 
     shelf.clear()

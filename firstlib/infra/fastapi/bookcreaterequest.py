@@ -60,8 +60,8 @@ def show_shelf() -> list[JsonDict]:
 
 
 @api.get("/{id}", status_code=200)
-def show_one(book_id: UUID) -> JsonDict:
+def show_one(id: UUID) -> JsonDict:
     for book_info in shelf:
-        if book_info["id"] == book_id:
+        if book_info["id"] == id:
             return book_info
     raise HTTPException(status_code=404, detail="Book not found")
