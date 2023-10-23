@@ -67,9 +67,8 @@ def test_not_read_missing() -> None:
     shelf.clear()
 
 
-@pytest.mark.skip
 def test_should_not_add_existing() -> None:
-    book = create_book()
+    book = fake.book()
     client.post("/books", json=book)
 
     response = client.post("/books", json=book)

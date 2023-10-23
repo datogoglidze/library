@@ -46,7 +46,7 @@ def create_book(request: BookCreateRequest) -> JsonDict:
     }
 
     for each_book in shelf:
-        if each_book["publisher"] == book_info["publisher"]:
+        if each_book["isbn"] == book_info["isbn"]:
             raise HTTPException(status_code=409, detail="Book already exists")
 
     shelf.append(book_info)
