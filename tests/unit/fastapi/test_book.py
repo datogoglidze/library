@@ -4,7 +4,7 @@ from uuid import UUID
 from faker import Faker
 from fastapi.testclient import TestClient
 
-from firstlib.api.book import app, shelf
+from firstlib.infra.fastapi.book import app, shelf
 
 client = TestClient(app)
 

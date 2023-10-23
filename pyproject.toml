@@ -10,6 +10,8 @@ python = "^3.11"
 httpx = "0.25.*"
 fastapi = "0.104.0"
 uvicorn = "0.23.*"
+python-dotenv = "*"
+typer = "*"
 alembic = "1.*"
 
 [tool.poetry.group.dev.dependencies]
