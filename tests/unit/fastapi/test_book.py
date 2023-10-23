@@ -5,7 +5,7 @@ from faker import Faker
 from fastapi.testclient import TestClient
 
 from firstlib.infra.fastapi import FastApiConfig
-from firstlib.infra.fastapi.bookcreaterequest import shelf
+from firstlib.infra.fastapi.books import shelf
 from firstlib.infra.fastapi.fake import Fake
 
 fake = Fake()
