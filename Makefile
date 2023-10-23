@@ -25,7 +25,10 @@ amend:
 	git commit --amend --no-edit -a
 
 test:
-	poetry run pytest --lf --cov
+	poetry run pytest tests/unit \
+		--last-failed \
+		--hypothesis-profile easy \
+		--cov
 
 unit-test-ci:
 	poetry run pytest tests/unit
