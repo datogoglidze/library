@@ -1,7 +1,6 @@
 from unittest.mock import ANY
 
 import pytest
-from faker import Faker
 from fastapi.testclient import TestClient
 
 from firstlib.infra.fastapi import FastApiConfig

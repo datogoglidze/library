@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any
-from unittest.mock import MagicMock
 from uuid import UUID, uuid4
 
 from faker import Faker
@@ -29,10 +28,10 @@ class Fake:
 @dataclass
 class FakeBook:
     id: UUID = field(default_factory=uuid4)
-    author: str = field(default_factory=uuid4)
-    isbn: str = field(default_factory=uuid4)
-    publisher: str = field(default_factory=uuid4)
-    total_pages: int = field(default_factory=uuid4)
+    author: str = field(default_factory=lambda: "")
+    isbn: str = field(default_factory=lambda: "")
+    publisher: str = field(default_factory=lambda: "")
+    total_pages: int = field(default_factory=lambda: 0)
     year: int = field(default_factory=lambda: 0)
 
     def create_request(self) -> dict[str, Any]:
