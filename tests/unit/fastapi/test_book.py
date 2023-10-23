@@ -4,9 +4,10 @@ from uuid import UUID
 from faker import Faker
 from fastapi.testclient import TestClient
 
-from firstlib.infra.fastapi.book import app, shelf
+from firstlib.infra.fastapi import FastApiConfig
+from firstlib.infra.fastapi.book import shelf
 
-client = TestClient(app)
+client = TestClient(FastApiConfig().setup())
 
 
 def test_create_book() -> None:

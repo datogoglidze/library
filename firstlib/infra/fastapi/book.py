@@ -2,10 +2,10 @@ from dataclasses import dataclass
 from typing import Any
 from uuid import UUID
 
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-app = FastAPI()
+api = types_api = APIRouter(tags=["Types"])
 
 
 @dataclass
@@ -23,7 +23,7 @@ JsonDict = dict[str, Any]
 shelf: list[JsonDict] = []
 
 
-@app.post("/books", status_code=201)
+@api.post("", status_code=201)
 def create_book(book: Book) -> JsonDict:
     book_info = {
         "book_id": book.book_id,
@@ -47,12 +47,12 @@ def create_book(book: Book) -> JsonDict:
     return book_info
 
 
-@app.get("/books", status_code=200)
+@api.get("", status_code=200)
 def show_shelf() -> list[JsonDict]:
     return shelf
 
 
-@app.get("/books/{book_id}", status_code=200)
+@api.get("/{book_id}", status_code=200)
 def show_one(book_id: UUID) -> JsonDict:
     for book_info in shelf:
         if book_info["book_id"] == book_id:

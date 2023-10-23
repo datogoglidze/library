@@ -5,8 +5,11 @@ from dataclasses import dataclass
 from typing import Any, Self
 
 import typer
+import uvicorn
 from dotenv import load_dotenv
 from typer import Typer
+
+from firstlib.infra.fastapi import FastApiConfig
 
 cli = Typer(no_args_is_help=True, add_completion=False)
 
@@ -16,6 +19,12 @@ def run(host: str = "0.0.0.0", port: int = 8000) -> None:
     typer.echo(f"Running application on {host}:{port}")
     load_dotenv()
     LoggingConfig.from_env().setup()
+    uvicorn.run(
+        host=host,
+        port=port,
+        app=FastApiConfig().setup(),
+        log_config=LoggingConfig.from_env().as_dict(),
+    )
 
 
 @dataclass
@@ -59,5 +68,10 @@ class LoggingConfig:
                     "level": self.level,
                     "propagate": False,
                 },
+            },
+            "uvicorn": {
+                "handlers": ["console", "file"],
+                "level": self.level,
+                "propagate": False,
             },
         }
