@@ -15,10 +15,7 @@ client = TestClient(FastApiConfig().setup())
 def test_create_book() -> None:
     book = fake.book()
 
-    response = client.post(
-        "/books",
-        json=book,
-    )
+    response = client.post("/books", json=book)
 
     assert response.status_code == 201, response.json()
     assert response.json() == {"id": ANY, **book}
@@ -26,53 +23,18 @@ def test_create_book() -> None:
     shelf.clear()
 
 
-@pytest.mark.skip
 def test_read_all_books() -> None:
-    client.post(
-        "/books",
-        json={
-            "title": title,
-            "author": author,
-            "isbn": isbn,
-            "publisher": publisher,
-            "total_pages": total_pages,
-            "year": year,
-        },
-    )
-    client.post(
-        "/books",
-        json={
-            "title": str(Faker().job()),
-            "author": str(Faker().first_name()),
-            "isbn": str(Faker().isbn13()),
-            "publisher": str(Faker().company()),
-            "total_pages": int(Faker().random_digit_not_null() * 10),
-            "year": int(Faker().year()),
-        },
-    )
+    book_one = fake.book()
+    book_two = fake.book()
 
+    client.post("/books", json=book_one)
+    client.post("/books", json=book_two)
     response = client.get("/books")
 
     assert response.status_code == 200
     assert response.json() == [
-        {
-            "id": ANY,
-            "title": str(Faker().job()),
-            "author": str(Faker().first_name()),
-            "isbn": str(Faker().isbn13()),
-            "publisher": str(Faker().company()),
-            "total_pages": int(Faker().random_digit_not_null() * 10),
-            "year": int(Faker().year()),
-        },
-        {
-            "id": ANY,
-            "title": str(Faker().job()),
-            "author": str(Faker().first_name()),
-            "isbn": str(Faker().isbn13()),
-            "publisher": str(Faker().company()),
-            "total_pages": int(Faker().random_digit_not_null() * 10),
-            "year": int(Faker().year()),
-        },
+        {"id": ANY, **book_one},
+        {"id": ANY, **book_two},
     ]
 
     shelf.clear()
@@ -80,16 +42,15 @@ def test_read_all_books() -> None:
 
 @pytest.mark.skip
 def test_read_one_book() -> None:
-    uuid = Faker().uuid4()
-    first_book = create_book()
-    second_book = create_book()
-    client.post("/books", json=first_book)
-    client.post("/books", json=second_book)
+    book_one = fake.book()
+    book_two = fake.book()
+    client.post("/books", json=book_one)
+    client.post("/books", json=book_two)
 
-    response = client.get(f"/books/{uuid}")
+    response = client.get(f"/books/{book_one['id']}")
 
     assert response.status_code == 200, response.json()
-    assert response.json() == first_book
+    assert response.json() == book_one
 
     shelf.clear()
 
