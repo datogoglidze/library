@@ -54,7 +54,7 @@ def test_read_one_book() -> None:
     shelf.clear()
 
 
-def test_not_read_missing() -> None:
+def test_should_not_read_missing() -> None:
     book = fake.book()
     client.post("/books", json=book)
 
