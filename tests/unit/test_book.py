@@ -18,12 +18,12 @@ def books() -> RestResource:
 
 
 def test_should_create(books: RestResource) -> None:
-    fake_book = fake.book()
+    book = fake.book()
 
     books.create_one(
-        from_data=fake_book,
+        from_data=book,
     ).assert_created(
-        book={"id": ANY, **fake_book},
+        book={"id": ANY, **book},
     )
 
     shelf.clear()
