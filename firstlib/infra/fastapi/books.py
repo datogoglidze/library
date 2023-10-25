@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from firstlib.infra.fastapi.docs import Response
-from firstlib.infra.fastapi.response import ResourceCreated
+from firstlib.infra.fastapi.response import ResourceCreated, ResourceFound
 
 books_api = APIRouter(tags=["Books"])
 
@@ -36,6 +36,11 @@ class BookItemEnvelope(BaseModel):
     book: BookItem
 
 
+class BookListEnvelope(BaseModel):
+    count: int
+    books: list[BookItem]
+
+
 @books_api.post(
     "",
     status_code=201,
@@ -61,9 +66,13 @@ def create_book(request: BookCreateRequest) -> ResourceCreated:
     return ResourceCreated(book=book_info)
 
 
-@books_api.get("", status_code=200)
-def show_shelf() -> list[JsonDict]:
-    return shelf
+@books_api.get(
+    "",
+    status_code=200,
+    response_model=Response[BookListEnvelope],
+)
+def read_all() -> ResourceFound:
+    return ResourceFound(books=shelf, count=len(shelf))
 
 
 @books_api.get("/{id}", status_code=200)

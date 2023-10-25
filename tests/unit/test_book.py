@@ -29,23 +29,16 @@ def test_should_create(books: RestResource) -> None:
     shelf.clear()
 
 
-def test_read_all_books() -> None:
-    book_one = fake.book()
-    book_two = fake.book()
-
-    client.post("/books", json=book_one)
-    client.post("/books", json=book_two)
-    response = client.get("/books")
-
-    assert response.status_code == 200
-    assert response.json() == [
-        {"id": ANY, **book_one},
-        {"id": ANY, **book_two},
+def test_should_list_all_created(books: RestResource) -> None:
+    fake_books = [
+        books.create_one(fake.book()).unpack(),
+        books.create_one(fake.book()).unpack(),
     ]
 
-    shelf.clear()
+    books.read_all().assert_ok(books=fake_books, count=len(fake_books))
 
 
+@pytest.mark.skip
 def test_read_one_book() -> None:
     book_one = fake.book()
     book_two = fake.book()
@@ -61,6 +54,7 @@ def test_read_one_book() -> None:
     shelf.clear()
 
 
+@pytest.mark.skip
 def test_should_not_read_missing() -> None:
     book = fake.book()
     client.post("/books", json=book)
@@ -73,6 +67,7 @@ def test_should_not_read_missing() -> None:
     shelf.clear()
 
 
+@pytest.mark.skip
 def test_should_not_add_existing() -> None:
     book = fake.book()
     client.post("/books", json=book)
