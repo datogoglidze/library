@@ -4,7 +4,7 @@ from uuid import UUID, uuid4
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-api = APIRouter(tags=["Books"])
+books_api = APIRouter(tags=["Books"])
 
 JsonDict = dict[str, Any]
 shelf: list[JsonDict] = []
@@ -29,7 +29,7 @@ class BookCreateResponse(BaseModel):
     year: int
 
 
-@api.post(
+@books_api.post(
     "",
     status_code=201,
     response_model=BookCreateResponse,
@@ -54,12 +54,12 @@ def create_book(request: BookCreateRequest) -> JsonDict:
     return book_info
 
 
-@api.get("", status_code=200)
+@books_api.get("", status_code=200)
 def show_shelf() -> list[JsonDict]:
     return shelf
 
 
-@api.get("/{id}", status_code=200)
+@books_api.get("/{id}", status_code=200)
 def show_one(id: UUID) -> JsonDict:
     for book_info in shelf:
         if book_info["id"] == id:
