@@ -1,22 +1,30 @@
 from unittest.mock import ANY
 
+import pytest
 from fastapi.testclient import TestClient
 
 from firstlib.infra.fastapi import FastApiConfig
 from firstlib.infra.fastapi.books import shelf
+from tests.unit.client import RestResource, RestfulName
 from tests.unit.fake import Fake
 
 fake = Fake()
 client = TestClient(FastApiConfig().setup())
 
 
-def test_create_book() -> None:
-    book = fake.book()
+@pytest.fixture
+def books() -> RestResource:
+    return RestResource(TestClient(FastApiConfig().setup()), RestfulName("book"))
 
-    response = client.post("/books", json=book)
 
-    assert response.status_code == 201, response.json()
-    assert response.json() == {"id": ANY, **book}
+def test_should_create(books: RestResource) -> None:
+    fake_book = fake.book()
+
+    books.create_one(
+        from_data=fake_book,
+    ).assert_created(
+        book={"id": ANY, **fake_book},
+    )
 
     shelf.clear()
 

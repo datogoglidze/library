@@ -4,6 +4,9 @@ from uuid import UUID, uuid4
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
+from firstlib.infra.fastapi.docs import Response
+from firstlib.infra.fastapi.response import ResourceCreated
+
 books_api = APIRouter(tags=["Books"])
 
 JsonDict = dict[str, Any]
@@ -19,7 +22,7 @@ class BookCreateRequest(BaseModel):
     year: int
 
 
-class BookCreateResponse(BaseModel):
+class BookItem(BaseModel):
     id: UUID
     title: str
     author: str
@@ -29,12 +32,16 @@ class BookCreateResponse(BaseModel):
     year: int
 
 
+class BookItemEnvelope(BaseModel):
+    book: BookItem
+
+
 @books_api.post(
     "",
     status_code=201,
-    response_model=BookCreateResponse,
+    response_model=Response[BookItemEnvelope],
 )
-def create_book(request: BookCreateRequest) -> JsonDict:
+def create_book(request: BookCreateRequest) -> ResourceCreated:
     book_info = {
         "id": uuid4(),
         "title": request.title,
@@ -51,7 +58,7 @@ def create_book(request: BookCreateRequest) -> JsonDict:
 
     shelf.append(book_info)
 
-    return book_info
+    return ResourceCreated(book=book_info)
 
 
 @books_api.get("", status_code=200)
