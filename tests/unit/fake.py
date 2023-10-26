@@ -22,3 +22,11 @@ class Fake:
             "total_pages": int(self.faker.random_digit_not_null()),
             "year": int(self.faker.year()),
         }
+
+    def author(self) -> dict[str, Any]:
+        return {
+            "name": self.uuid(),
+            "birth_date": self.uuid(),
+            "death_date": self.uuid(),
+            "bio": self.uuid(),
+        }
