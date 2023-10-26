@@ -30,3 +30,9 @@ class Fake:
             "death_date": self.uuid(),
             "bio": self.uuid(),
         }
+
+    def publisher(self) -> dict[str, Any]:
+        return {
+            "name": self.uuid(),
+            "country": self.uuid(),
+        }
