@@ -9,8 +9,7 @@ from firstlib.infra.fastapi.response import ResourceCreated
 
 publishers_api = APIRouter(tags=["Publishers"])
 
-JsonDict = dict[str, Any]
-publishers: list[JsonDict] = []
+publishers: list[dict[str, Any]] = []
 
 
 class PublisherCreateRequest(BaseModel):
@@ -34,16 +33,16 @@ class PublisherItemEnvelope(BaseModel):
     response_model=Response[PublisherItemEnvelope],
 )
 def create_publisher(request: PublisherCreateRequest) -> ResourceCreated:
-    publisher_info = {
+    publisher = {
         "id": uuid4(),
         "name": request.name,
         "country": request.country,
     }
 
     for each_publisher in publishers:
-        if each_publisher["name"] == publisher_info["name"]:
+        if each_publisher["name"] == publisher["name"]:
             raise HTTPException(status_code=409, detail="Publisher already exists")
 
-    publishers.append(publisher_info)
+    publishers.append(publisher)
 
-    return ResourceCreated(publisher=publisher_info)
+    return ResourceCreated(publisher=publisher)

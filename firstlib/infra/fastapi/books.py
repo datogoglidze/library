@@ -9,12 +9,11 @@ from firstlib.infra.fastapi.response import ResourceCreated, ResourceFound
 
 books_api = APIRouter(tags=["Books"])
 
-JsonDict = dict[str, Any]
-shelf: list[JsonDict] = []
+shelf: list[dict[str, Any]] = []
 
 
 class BookCreateRequest(BaseModel):
-    title: str
+    name: str
     author: str
     isbn: str
     publisher: str
@@ -24,7 +23,7 @@ class BookCreateRequest(BaseModel):
 
 class BookItem(BaseModel):
     id: UUID
-    title: str
+    name: str
     author: str
     isbn: str
     publisher: str
@@ -47,9 +46,9 @@ class BookListEnvelope(BaseModel):
     response_model=Response[BookItemEnvelope],
 )
 def create_book(request: BookCreateRequest) -> ResourceCreated:
-    book_info = {
+    book = {
         "id": uuid4(),
-        "title": request.title,
+        "name": request.name,
         "author": request.author,
         "isbn": request.isbn,
         "publisher": request.publisher,
@@ -58,12 +57,12 @@ def create_book(request: BookCreateRequest) -> ResourceCreated:
     }
 
     for each_book in shelf:
-        if each_book["isbn"] == book_info["isbn"]:
+        if each_book["isbn"] == book["isbn"]:
             raise HTTPException(status_code=409, detail="Book already exists")
 
-    shelf.append(book_info)
+    shelf.append(book)
 
-    return ResourceCreated(book=book_info)
+    return ResourceCreated(book=book)
 
 
 @books_api.get(
@@ -75,9 +74,9 @@ def read_all() -> ResourceFound:
     return ResourceFound(books=shelf, count=len(shelf))
 
 
-@books_api.get("/{id}", status_code=200)
-def show_one(id: UUID) -> JsonDict:
+@books_api.get("/{book_id}", status_code=200)
+def show_one(book_id: UUID) -> dict[str, Any]:
     for book_info in shelf:
-        if book_info["id"] == id:
+        if book_info["id"] == book_id:
             return book_info
     raise HTTPException(status_code=404, detail="Book not found")
