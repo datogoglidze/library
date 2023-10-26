@@ -3,9 +3,14 @@ from uuid import UUID, uuid4
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from starlette.responses import JSONResponse
 
 from firstlib.infra.fastapi.docs import Response
-from firstlib.infra.fastapi.response import ResourceCreated, ResourceFound
+from firstlib.infra.fastapi.response import (
+    ResourceCreated,
+    ResourceExists,
+    ResourceFound,
+)
 
 books_api = APIRouter(tags=["Books"])
 
@@ -45,7 +50,7 @@ class BookListEnvelope(BaseModel):
     status_code=201,
     response_model=Response[BookItemEnvelope],
 )
-def create_book(request: BookCreateRequest) -> ResourceCreated:
+def create_book(request: BookCreateRequest) -> JSONResponse | dict[str, Any]:
     book = {
         "id": uuid4(),
         "name": request.name,
@@ -58,7 +63,9 @@ def create_book(request: BookCreateRequest) -> ResourceCreated:
 
     for each_book in shelf:
         if each_book["isbn"] == book["isbn"]:
-            raise HTTPException(status_code=409, detail="Book already exists")
+            return ResourceExists(
+                f"Book with ISBN<{each_book['isbn']}> already exists."
+            )
 
     shelf.append(book)
 
