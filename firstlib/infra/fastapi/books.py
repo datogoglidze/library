@@ -46,7 +46,7 @@ class BookListEnvelope(BaseModel):
     response_model=Response[BookItemEnvelope],
 )
 def create_book(request: BookCreateRequest) -> ResourceCreated:
-    book_info = {
+    book = {
         "id": uuid4(),
         "title": request.title,
         "author": request.author,
@@ -57,12 +57,12 @@ def create_book(request: BookCreateRequest) -> ResourceCreated:
     }
 
     for each_book in shelf:
-        if each_book["isbn"] == book_info["isbn"]:
+        if each_book["isbn"] == book["isbn"]:
             raise HTTPException(status_code=409, detail="Book already exists")
 
-    shelf.append(book_info)
+    shelf.append(book)
 
-    return ResourceCreated(book=book_info)
+    return ResourceCreated(book=book)
 
 
 @books_api.get(
