@@ -38,6 +38,14 @@ def test_should_list_all_created(books: RestResource) -> None:
     books.read_all().assert_ok(books=fake_books, count=len(fake_books))
 
 
+def test_should_not_duplicate(books: RestResource) -> None:
+    book = books.create_one(fake.book())
+
+    books.create_one(
+        from_data=book.unpack(exclude=["id"]),
+    ).assert_conflict(with_message=f"Book with ISBN<{book['isbn']}> already exists.")
+
+
 @pytest.mark.skip
 def test_read_one_book() -> None:
     book_one = fake.book()

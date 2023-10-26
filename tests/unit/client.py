@@ -94,8 +94,8 @@ class RestEnvelope:
     def assert_not_found(self, with_message: str) -> None:
         self.assert_fail(404, with_message)
 
-    def assert_conflict(self, with_message: str, and_data: dict[str, Any]) -> None:
-        self.assert_fail(409, with_message, and_data)
+    def assert_conflict(self, with_message: str) -> None:
+        self.assert_fail(409, with_message)
 
     def assert_invalid(self, with_detail: dict[str, Any]) -> None:
         self._assert(422, with_json={"detail": [with_detail]})
