@@ -37,7 +37,7 @@ class AuthorItemEnvelope(BaseModel):
     response_model=Response[AuthorItemEnvelope],
 )
 def create_author(request: AuthorCreateRequest) -> ResourceCreated:
-    author_info = {
+    author = {
         "id": uuid4(),
         "name": request.name,
         "birth_date": request.birth_date,
@@ -46,9 +46,9 @@ def create_author(request: AuthorCreateRequest) -> ResourceCreated:
     }
 
     for each_author in authors:
-        if each_author["name"] == author_info["name"]:
+        if each_author["name"] == author["name"]:
             raise HTTPException(status_code=409, detail="Author already exists")
 
-    authors.append(author_info)
+    authors.append(author)
 
-    return ResourceCreated(author=author_info)
+    return ResourceCreated(author=author)
