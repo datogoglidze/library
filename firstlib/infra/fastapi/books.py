@@ -74,9 +74,9 @@ def read_all() -> ResourceFound:
     return ResourceFound(books=shelf, count=len(shelf))
 
 
-@books_api.get("/{id}", status_code=200)
-def show_one(id: UUID) -> dict[str, Any]:
+@books_api.get("/{book_id}", status_code=200)
+def show_one(book_id: UUID) -> dict[str, Any]:
     for book_info in shelf:
-        if book_info["id"] == id:
+        if book_info["id"] == book_id:
             return book_info
     raise HTTPException(status_code=404, detail="Book not found")
