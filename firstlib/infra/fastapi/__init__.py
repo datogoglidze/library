@@ -1,8 +1,12 @@
 from dataclasses import dataclass
+from typing import Any
 
 from fastapi import FastAPI
 
+from firstlib.infra.fastapi.author import authors_api
 from firstlib.infra.fastapi.books import books_api
+
+JsonDict = dict[str, Any]
 
 
 @dataclass
@@ -12,5 +16,6 @@ class FastApiConfig:
     def setup(self) -> FastAPI:
         app = FastAPI()
         app.include_router(books_api, prefix="/books")
+        app.include_router(authors_api, prefix="/authors")
 
         return app
