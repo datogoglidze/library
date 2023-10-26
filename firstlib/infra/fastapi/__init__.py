@@ -3,7 +3,7 @@ from typing import Any
 
 from fastapi import FastAPI
 
-from firstlib.infra.fastapi.author import authors_api
+from firstlib.infra.fastapi.authors import authors_api
 from firstlib.infra.fastapi.books import books_api
 from firstlib.infra.fastapi.publishers import publishers_api
 
