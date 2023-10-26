@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from fastapi import FastAPI
 
-from firstlib.infra.fastapi.books import api
+from firstlib.infra.fastapi.books import books_api
 
 
 @dataclass
@@ -11,6 +11,6 @@ class FastApiConfig:
 
     def setup(self) -> FastAPI:
         app = FastAPI()
-        app.include_router(api, prefix="/books")
+        app.include_router(books_api, prefix="/books")
 
         return app

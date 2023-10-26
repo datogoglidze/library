@@ -4,7 +4,10 @@ from uuid import UUID, uuid4
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-api = APIRouter(tags=["Books"])
+from firstlib.infra.fastapi.docs import Response
+from firstlib.infra.fastapi.response import ResourceCreated, ResourceFound
+
+books_api = APIRouter(tags=["Books"])
 
 JsonDict = dict[str, Any]
 shelf: list[JsonDict] = []
@@ -19,7 +22,7 @@ class BookCreateRequest(BaseModel):
     year: int
 
 
-class BookCreateResponse(BaseModel):
+class BookItem(BaseModel):
     id: UUID
     title: str
     author: str
@@ -29,12 +32,21 @@ class BookCreateResponse(BaseModel):
     year: int
 
 
-@api.post(
+class BookItemEnvelope(BaseModel):
+    book: BookItem
+
+
+class BookListEnvelope(BaseModel):
+    count: int
+    books: list[BookItem]
+
+
+@books_api.post(
     "",
     status_code=201,
-    response_model=BookCreateResponse,
+    response_model=Response[BookItemEnvelope],
 )
-def create_book(request: BookCreateRequest) -> JsonDict:
+def create_book(request: BookCreateRequest) -> ResourceCreated:
     book_info = {
         "id": uuid4(),
         "title": request.title,
@@ -51,15 +63,19 @@ def create_book(request: BookCreateRequest) -> JsonDict:
 
     shelf.append(book_info)
 
-    return book_info
+    return ResourceCreated(book=book_info)
 
 
-@api.get("", status_code=200)
-def show_shelf() -> list[JsonDict]:
-    return shelf
+@books_api.get(
+    "",
+    status_code=200,
+    response_model=Response[BookListEnvelope],
+)
+def read_all() -> ResourceFound:
+    return ResourceFound(books=shelf, count=len(shelf))
 
 
-@api.get("/{id}", status_code=200)
+@books_api.get("/{id}", status_code=200)
 def show_one(id: UUID) -> JsonDict:
     for book_info in shelf:
         if book_info["id"] == id:
