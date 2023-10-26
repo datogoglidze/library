@@ -15,7 +15,7 @@ class Fake:
 
     def book(self) -> dict[str, Any]:
         return {
-            "title": str(self.faker.job()),
+            "name": str(self.faker.job()),
             "author": str(self.faker.first_name()),
             "isbn": str(self.faker.isbn13()),
             "publisher": str(self.faker.company()),

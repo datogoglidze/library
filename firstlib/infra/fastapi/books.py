@@ -13,7 +13,7 @@ shelf: list[dict[str, Any]] = []
 
 
 class BookCreateRequest(BaseModel):
-    title: str
+    name: str
     author: str
     isbn: str
     publisher: str
@@ -23,7 +23,7 @@ class BookCreateRequest(BaseModel):
 
 class BookItem(BaseModel):
     id: UUID
-    title: str
+    name: str
     author: str
     isbn: str
     publisher: str
@@ -48,7 +48,7 @@ class BookListEnvelope(BaseModel):
 def create_book(request: BookCreateRequest) -> ResourceCreated:
     book = {
         "id": uuid4(),
-        "title": request.title,
+        "name": request.name,
         "author": request.author,
         "isbn": request.isbn,
         "publisher": request.publisher,
