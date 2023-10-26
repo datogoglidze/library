@@ -9,8 +9,7 @@ from firstlib.infra.fastapi.response import ResourceCreated
 
 authors_api = APIRouter(tags=["Authors"])
 
-JsonDict = dict[str, Any]
-authors: list[JsonDict] = []
+authors: list[dict[str, Any]] = []
 
 
 class AuthorCreateRequest(BaseModel):

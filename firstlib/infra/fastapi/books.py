@@ -9,8 +9,7 @@ from firstlib.infra.fastapi.response import ResourceCreated, ResourceFound
 
 books_api = APIRouter(tags=["Books"])
 
-JsonDict = dict[str, Any]
-shelf: list[JsonDict] = []
+shelf: list[dict[str, Any]] = []
 
 
 class BookCreateRequest(BaseModel):
@@ -76,7 +75,7 @@ def read_all() -> ResourceFound:
 
 
 @books_api.get("/{id}", status_code=200)
-def show_one(id: UUID) -> JsonDict:
+def show_one(id: UUID) -> dict[str, Any]:
     for book_info in shelf:
         if book_info["id"] == id:
             return book_info
