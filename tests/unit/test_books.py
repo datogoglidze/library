@@ -52,17 +52,14 @@ def test_should_read_one(books: RestResource) -> None:
     books.read_one(with_id=book["id"]).assert_ok(book=book.unpack())
 
 
-@pytest.mark.skip
-def test_should_not_read_missing() -> None:
-    book = fake.book()
-    client.post("/books", json=book)
+def test_should_not_read_missing(books: RestResource) -> None:
+    unknown_book_id = fake.uuid()
 
-    response = client.get(f"/books/{fake.uuid()}")
-
-    assert response.status_code == 404, response.json()
-    assert response.json()["detail"] == "Book not found"
-
-    shelf.clear()
+    books.read_one(
+        with_id=unknown_book_id,
+    ).assert_not_found(
+        with_message=f"Book with id<{unknown_book_id}> does not exist.",
+    )
 
 
 @pytest.mark.skip

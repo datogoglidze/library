@@ -10,6 +10,7 @@ from firstlib.infra.fastapi.response import (
     ResourceCreated,
     ResourceExists,
     ResourceFound,
+    ResourceNotFound,
 )
 
 books_api = APIRouter(tags=["Books"])
@@ -86,7 +87,9 @@ def read_all() -> ResourceFound:
     status_code=200,
     response_model=Response[BookItemEnvelope],
 )
-def read_one(book_id: UUID) -> ResourceFound:
+def read_one(book_id: UUID) -> ResourceFound | ResourceNotFound:
     for book_info in shelf:
         if book_info["id"] == book_id:
             return ResourceFound(book=book_info)
+
+    return ResourceNotFound(f"Book with id<{book_id}> does not exist.")
