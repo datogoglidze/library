@@ -57,7 +57,7 @@ def test_should_read_one(books: RestResource) -> None:
     shelf.clear()
 
 
-def test_should_not_read_missing(books: RestResource) -> None:
+def test_should_not_read_unknown(books: RestResource) -> None:
     unknown_book_id = fake.uuid()
 
     books.read_one(

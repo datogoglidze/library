@@ -59,7 +59,7 @@ def test_should_read_one(authors: RestResource) -> None:
     all_authors.clear()
 
 
-def test_should_not_read_missing(authors: RestResource) -> None:
+def test_should_not_read_unknown(authors: RestResource) -> None:
     unknown_author_id = fake.uuid()
 
     authors.read_one(
