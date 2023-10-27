@@ -60,6 +60,10 @@ def test_should_read_one(books: RestResource) -> None:
     shelf.clear()
 
 
+def test_should_not_list_anything_when_none_exists(books: RestResource) -> None:
+    books.read_all().assert_ok(books=[], count=0)
+
+
 def test_should_not_read_unknown(books: RestResource) -> None:
     unknown_book_id = fake.uuid()
 

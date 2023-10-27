@@ -60,6 +60,10 @@ def test_should_read_one(authors: RestResource) -> None:
     all_authors.clear()
 
 
+def test_should_not_list_anything_when_none_exists(authors: RestResource) -> None:
+    authors.read_all().assert_ok(authors=[], count=0)
+
+
 def test_should_not_read_unknown(authors: RestResource) -> None:
     unknown_author_id = fake.uuid()
 
