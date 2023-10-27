@@ -59,7 +59,8 @@ def create_author(request: AuthorCreateRequest) -> JSONResponse | dict[str, Any]
     for author_info in all_authors:
         if author_info["name"] == author["name"]:
             return ResourceExists(
-                f"Author with name<{author_info['name']}> already exists."
+                f"Author with name<{author_info['name']}> already exists.",
+                author={"id": str(author_info["id"])},
             )
 
     all_authors.append(author)

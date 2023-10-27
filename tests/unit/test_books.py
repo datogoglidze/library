@@ -33,7 +33,10 @@ def test_should_not_duplicate(books: RestResource) -> None:
 
     books.create_one(
         from_data=book.unpack(exclude=["id"]),
-    ).assert_conflict(with_message=f"Book with ISBN<{book['isbn']}> already exists.")
+    ).assert_conflict(
+        with_message=f"Book with ISBN<{book['isbn']}> already exists.",
+        and_data={"book": {"id": book["id"]}},
+    )
 
     shelf.clear()
 

@@ -34,7 +34,8 @@ def test_should_not_duplicate(authors: RestResource) -> None:
     authors.create_one(
         from_data=author.unpack(exclude=["id"]),
     ).assert_conflict(
-        with_message=f"Author with name<{author['name']}> already exists."
+        with_message=f"Author with name<{author['name']}> already exists.",
+        and_data={"author": {"id": author["id"]}},
     )
 
     all_authors.clear()

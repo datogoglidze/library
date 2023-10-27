@@ -53,7 +53,8 @@ def create_publisher(request: PublisherCreateRequest) -> JSONResponse | dict[str
     for publisher_info in all_publishers:
         if publisher_info["name"] == publisher["name"]:
             return ResourceExists(
-                f"Publisher with name<{publisher_info['name']}> already exists."
+                f"Publisher with name<{publisher_info['name']}> already exists.",
+                publisher={"id": str(publisher_info["id"])},
             )
 
     all_publishers.append(publisher)
