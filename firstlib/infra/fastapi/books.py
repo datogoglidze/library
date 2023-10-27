@@ -65,7 +65,8 @@ def create(request: BookCreateRequest) -> JSONResponse | dict[str, Any]:
     for book_info in shelf:
         if book_info["isbn"] == book["isbn"]:
             return ResourceExists(
-                f"Book with ISBN<{book_info['isbn']}> already exists."
+                f"Book with ISBN<{book_info['isbn']}> already exists.",
+                book={"id": str(book_info["id"])},
             )
 
     shelf.append(book)

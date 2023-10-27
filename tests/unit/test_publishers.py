@@ -34,7 +34,8 @@ def test_should_not_duplicate(publishers: RestResource) -> None:
     publishers.create_one(
         from_data=publisher.unpack(exclude=["id"]),
     ).assert_conflict(
-        with_message=f"Publisher with name<{publisher['name']}> already exists."
+        with_message=f"Publisher with name<{publisher['name']}> already exists.",
+        and_data={"publisher": {"id": publisher["id"]}},
     )
 
     all_publishers.clear()
