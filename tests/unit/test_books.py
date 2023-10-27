@@ -9,7 +9,6 @@ from tests.unit.client import RestfulName, RestResource
 from tests.unit.fake import Fake
 
 fake = Fake()
-client = TestClient(FastApiConfig().setup())
 
 
 @pytest.fixture
