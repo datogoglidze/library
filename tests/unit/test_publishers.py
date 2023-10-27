@@ -62,6 +62,10 @@ def test_should_read_one(publishers: RestResource) -> None:
     all_publishers.clear()
 
 
+def test_should_not_list_anything_when_none_exists(publishers: RestResource) -> None:
+    publishers.read_all().assert_ok(publishers=[], count=0)
+
+
 def test_should_not_read_unknown(publishers: RestResource) -> None:
     unknown_publisher_id = fake.uuid()
 
