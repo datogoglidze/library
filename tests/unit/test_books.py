@@ -60,16 +60,3 @@ def test_should_not_read_missing(books: RestResource) -> None:
     ).assert_not_found(
         with_message=f"Book with id<{unknown_book_id}> does not exist.",
     )
-
-
-@pytest.mark.skip
-def test_should_not_add_existing() -> None:
-    book = fake.book()
-    client.post("/books", json=book)
-
-    response = client.post("/books", json=book)
-
-    assert response.status_code == 409
-    assert response.json()["detail"] == "Book already exists"
-
-    shelf.clear()
