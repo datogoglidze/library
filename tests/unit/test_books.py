@@ -36,6 +36,8 @@ def test_should_not_duplicate(books: RestResource) -> None:
         from_data=book.unpack(exclude=["id"]),
     ).assert_conflict(with_message=f"Book with ISBN<{book['isbn']}> already exists.")
 
+    shelf.clear()
+
 
 def test_should_list_all_created(books: RestResource) -> None:
     fake_books = [
@@ -45,11 +47,15 @@ def test_should_list_all_created(books: RestResource) -> None:
 
     books.read_all().assert_ok(books=fake_books, count=len(fake_books))
 
+    shelf.clear()
+
 
 def test_should_read_one(books: RestResource) -> None:
     book = books.create_one(fake.book())
 
     books.read_one(with_id=book["id"]).assert_ok(book=book.unpack())
+
+    shelf.clear()
 
 
 def test_should_not_read_missing(books: RestResource) -> None:
