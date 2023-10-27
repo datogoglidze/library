@@ -51,7 +51,7 @@ class BookListEnvelope(BaseModel):
     status_code=201,
     response_model=Response[BookItemEnvelope],
 )
-def create_book(request: BookCreateRequest) -> JSONResponse | dict[str, Any]:
+def create(request: BookCreateRequest) -> JSONResponse | dict[str, Any]:
     book = {
         "id": uuid4(),
         "name": request.name,
@@ -62,10 +62,10 @@ def create_book(request: BookCreateRequest) -> JSONResponse | dict[str, Any]:
         "year": request.year,
     }
 
-    for each_book in shelf:
-        if each_book["isbn"] == book["isbn"]:
+    for book_info in shelf:
+        if book_info["isbn"] == book["isbn"]:
             return ResourceExists(
-                f"Book with ISBN<{each_book['isbn']}> already exists."
+                f"Book with ISBN<{book_info['isbn']}> already exists."
             )
 
     shelf.append(book)
