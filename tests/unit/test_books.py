@@ -9,7 +9,6 @@ from tests.unit.client import RestfulName, RestResource
 from tests.unit.fake import Fake
 
 fake = Fake()
-client = TestClient(FastApiConfig().setup())
 
 
 @pytest.fixture
@@ -29,6 +28,16 @@ def test_should_create(books: RestResource) -> None:
     shelf.clear()
 
 
+def test_should_not_duplicate(books: RestResource) -> None:
+    book = books.create_one(fake.book())
+
+    books.create_one(
+        from_data=book.unpack(exclude=["id"]),
+    ).assert_conflict(with_message=f"Book with ISBN<{book['isbn']}> already exists.")
+
+    shelf.clear()
+
+
 def test_should_list_all_created(books: RestResource) -> None:
     fake_books = [
         books.create_one(fake.book()).unpack(),
@@ -37,52 +46,22 @@ def test_should_list_all_created(books: RestResource) -> None:
 
     books.read_all().assert_ok(books=fake_books, count=len(fake_books))
 
+    shelf.clear()
 
-def test_should_not_duplicate(books: RestResource) -> None:
+
+def test_should_read_one(books: RestResource) -> None:
     book = books.create_one(fake.book())
 
-    books.create_one(
-        from_data=book.unpack(exclude=["id"]),
-    ).assert_conflict(with_message=f"Book with ISBN<{book['isbn']}> already exists.")
-
-
-@pytest.mark.skip
-def test_read_one_book() -> None:
-    book_one = fake.book()
-    book_two = fake.book()
-    client.post("/books", json=book_one)
-    client.post("/books", json=book_two)
-    known_book_id = client.get("/books").json()[0]["id"]
-
-    response = client.get(f"/books/{known_book_id}")
-
-    assert response.status_code == 200, response.json()
-    assert response.json() == {"id": ANY, **book_one}
+    books.read_one(with_id=book["id"]).assert_ok(book=book.unpack())
 
     shelf.clear()
 
 
-@pytest.mark.skip
-def test_should_not_read_missing() -> None:
-    book = fake.book()
-    client.post("/books", json=book)
+def test_should_not_read_missing(books: RestResource) -> None:
+    unknown_book_id = fake.uuid()
 
-    response = client.get(f"/books/{fake.uuid()}")
-
-    assert response.status_code == 404, response.json()
-    assert response.json()["detail"] == "Book not found"
-
-    shelf.clear()
-
-
-@pytest.mark.skip
-def test_should_not_add_existing() -> None:
-    book = fake.book()
-    client.post("/books", json=book)
-
-    response = client.post("/books", json=book)
-
-    assert response.status_code == 409
-    assert response.json()["detail"] == "Book already exists"
-
-    shelf.clear()
+    books.read_one(
+        with_id=unknown_book_id,
+    ).assert_not_found(
+        with_message=f"Book with id<{unknown_book_id}> does not exist.",
+    )

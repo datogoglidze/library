@@ -1,7 +1,7 @@
 from typing import Any
 from uuid import UUID, uuid4
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from pydantic import BaseModel
 from starlette.responses import JSONResponse
 
@@ -10,6 +10,7 @@ from firstlib.infra.fastapi.response import (
     ResourceCreated,
     ResourceExists,
     ResourceFound,
+    ResourceNotFound,
 )
 
 books_api = APIRouter(tags=["Books"])
@@ -81,9 +82,14 @@ def read_all() -> ResourceFound:
     return ResourceFound(books=shelf, count=len(shelf))
 
 
-@books_api.get("/{book_id}", status_code=200)
-def show_one(book_id: UUID) -> dict[str, Any]:
+@books_api.get(
+    "/{book_id}",
+    status_code=200,
+    response_model=Response[BookItemEnvelope],
+)
+def read_one(book_id: UUID) -> ResourceFound | ResourceNotFound:
     for book_info in shelf:
         if book_info["id"] == book_id:
-            return book_info
-    raise HTTPException(status_code=404, detail="Book not found")
+            return ResourceFound(book=book_info)
+
+    return ResourceNotFound(f"Book with id<{book_id}> does not exist.")
