@@ -46,20 +46,10 @@ def test_should_not_duplicate(books: RestResource) -> None:
     ).assert_conflict(with_message=f"Book with ISBN<{book['isbn']}> already exists.")
 
 
-@pytest.mark.skip
-def test_read_one_book() -> None:
-    book_one = fake.book()
-    book_two = fake.book()
-    client.post("/books", json=book_one)
-    client.post("/books", json=book_two)
-    known_book_id = client.get("/books").json()[0]["id"]
+def test_should_read_one(books: RestResource) -> None:
+    book = books.create_one(fake.book())
 
-    response = client.get(f"/books/{known_book_id}")
-
-    assert response.status_code == 200, response.json()
-    assert response.json() == {"id": ANY, **book_one}
-
-    shelf.clear()
+    books.read_one(with_id=book["id"]).assert_ok(book=book.unpack())
 
 
 @pytest.mark.skip
