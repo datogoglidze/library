@@ -25,8 +25,6 @@ def test_should_create(publishers: RestResource) -> None:
         publisher={"id": ANY, **publisher},
     )
 
-    all_publishers.clear()
-
 
 def test_should_not_duplicate(publishers: RestResource) -> None:
     publisher = publishers.create_one(fake.publisher())
@@ -38,10 +36,10 @@ def test_should_not_duplicate(publishers: RestResource) -> None:
         and_data={"publisher": {"id": publisher["id"]}},
     )
 
-    all_publishers.clear()
-
 
 def test_should_list_all_created(publishers: RestResource) -> None:
+    all_publishers.clear()
+
     fake_publishers = [
         publishers.create_one(fake.publisher()).unpack(),
         publishers.create_one(fake.publisher()).unpack(),
@@ -59,10 +57,10 @@ def test_should_read_one(publishers: RestResource) -> None:
 
     publishers.read_one(with_id=publisher["id"]).assert_ok(publisher=publisher.unpack())
 
-    all_publishers.clear()
-
 
 def test_should_not_list_anything_when_none_exists(publishers: RestResource) -> None:
+    all_publishers.clear()
+
     publishers.read_all().assert_ok(publishers=[], count=0)
 
 
