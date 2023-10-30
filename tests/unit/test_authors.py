@@ -25,8 +25,6 @@ def test_should_create(authors: RestResource) -> None:
         author={"id": ANY, **author},
     )
 
-    all_authors.clear()
-
 
 def test_should_not_duplicate(authors: RestResource) -> None:
     author = authors.create_one(fake.author())
@@ -38,10 +36,10 @@ def test_should_not_duplicate(authors: RestResource) -> None:
         and_data={"author": {"id": author["id"]}},
     )
 
-    all_authors.clear()
-
 
 def test_should_list_all_created(authors: RestResource) -> None:
+    all_authors.clear()
+
     fake_authors = [
         authors.create_one(fake.author()).unpack(),
         authors.create_one(fake.author()).unpack(),
@@ -49,18 +47,16 @@ def test_should_list_all_created(authors: RestResource) -> None:
 
     authors.read_all().assert_ok(authors=fake_authors, count=len(fake_authors))
 
-    all_authors.clear()
-
 
 def test_should_read_one(authors: RestResource) -> None:
     author = authors.create_one(fake.author())
 
     authors.read_one(with_id=author["id"]).assert_ok(author=author.unpack())
 
-    all_authors.clear()
-
 
 def test_should_not_list_anything_when_none_exists(authors: RestResource) -> None:
+    all_authors.clear()
+
     authors.read_all().assert_ok(authors=[], count=0)
 
 

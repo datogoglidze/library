@@ -25,8 +25,6 @@ def test_should_create(books: RestResource) -> None:
         book={"id": ANY, **book},
     )
 
-    shelf.clear()
-
 
 def test_should_not_duplicate(books: RestResource) -> None:
     book = books.create_one(fake.book())
@@ -38,10 +36,10 @@ def test_should_not_duplicate(books: RestResource) -> None:
         and_data={"book": {"id": book["id"]}},
     )
 
-    shelf.clear()
-
 
 def test_should_list_all_created(books: RestResource) -> None:
+    shelf.clear()
+
     fake_books = [
         books.create_one(fake.book()).unpack(),
         books.create_one(fake.book()).unpack(),
@@ -57,10 +55,10 @@ def test_should_read_one(books: RestResource) -> None:
 
     books.read_one(with_id=book["id"]).assert_ok(book=book.unpack())
 
-    shelf.clear()
-
 
 def test_should_not_list_anything_when_none_exists(books: RestResource) -> None:
+    shelf.clear()
+
     books.read_all().assert_ok(books=[], count=0)
 
 
