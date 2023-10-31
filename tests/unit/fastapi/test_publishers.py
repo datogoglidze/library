@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from firstlib.infra.fastapi import FastApiConfig
 from firstlib.infra.fastapi.publishers import all_publishers
 from tests.unit.client import RestfulName, RestResource
-from tests.unit.fake import Fake
+from tests.unit.fastapi.fake import Fake
 
 fake = Fake()
 
