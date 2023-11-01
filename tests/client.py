@@ -5,14 +5,30 @@ from typing import Any
 from uuid import UUID
 
 import httpx
-from starlette.testclient import TestClient
 
-from firstlib.infra.http import HttpUrl
+from firstlib.infra.http import HttpUrl, Httpx
+
+
+@dataclass
+class FirstlibApi:
+    http: Httpx
+
+    @property
+    def books(self) -> RestResource:
+        return RestResource(self.http, name=RestfulName("book"))
+
+    @property
+    def authors(self) -> RestResource:
+        return RestResource(self.http, name=RestfulName("author"))
+
+    @property
+    def publishers(self) -> RestResource:
+        return RestResource(self.http, name=RestfulName("publisher"))
 
 
 @dataclass
 class RestResource:
-    http: TestClient
+    http: Httpx
     name: RestfulName
 
     def parse(self, response: httpx.Response) -> RestEnvelope:
