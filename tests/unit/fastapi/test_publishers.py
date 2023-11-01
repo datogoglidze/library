@@ -1,6 +1,5 @@
 from unittest.mock import ANY
 
-from firstlib.infra.fastapi.publishers import all_publishers
 from tests.client import FirstlibApi
 from tests.unit.fastapi.fake import Fake
 
@@ -29,8 +28,6 @@ def test_should_not_duplicate(firstlib: FirstlibApi) -> None:
 
 
 def test_should_list_all_created(firstlib: FirstlibApi) -> None:
-    all_publishers.clear()
-
     fake_publishers = [
         firstlib.publishers.create_one(fake.publisher()).unpack(),
         firstlib.publishers.create_one(fake.publisher()).unpack(),
@@ -39,8 +36,6 @@ def test_should_list_all_created(firstlib: FirstlibApi) -> None:
     firstlib.publishers.read_all().assert_ok(
         publishers=fake_publishers, count=len(fake_publishers)
     )
-
-    all_publishers.clear()
 
 
 def test_should_read_one(firstlib: FirstlibApi) -> None:
@@ -52,8 +47,6 @@ def test_should_read_one(firstlib: FirstlibApi) -> None:
 
 
 def test_should_not_list_anything_when_none_exists(firstlib: FirstlibApi) -> None:
-    all_publishers.clear()
-
     firstlib.publishers.read_all().assert_ok(publishers=[], count=0)
 
 
