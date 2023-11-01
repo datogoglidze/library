@@ -759,6 +759,25 @@ files = [
 typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
 
 [[package]]
+name = "pydevtools"
+version = "0.1.0"
+description = "Apex Development Tools for python."
+optional = false
+python-versions = "^3.11"
+files = []
+develop = false
+
+[package.dependencies]
+fastapi = "*"
+httpx = "*"
+
+[package.source]
+type = "git"
+url = "https://github.com/ApexLTD/pydevtools.git#main"
+reference = "HEAD"
+resolved_reference = "f373fde05b55a059f42849b309d95c0048347fac"
+
+[[package]]
 name = "pytest"
 version = "7.4.3"
 description = "pytest: simple powerful testing with Python"
@@ -1039,4 +1058,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "273c46be296f6d9a6a1661078c164274c69d8c1d1fc1f075c1839f373ebbe074"
+content-hash = "4c04ded120307a504df98acd82970abf6093ff78ed8fe8bb29367065004bfacb"

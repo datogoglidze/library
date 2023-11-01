@@ -13,6 +13,7 @@ uvicorn = "0.23.*"
 python-dotenv = "*"
 typer = "*"
 alembic = "1.*"
+pydevtools = {git = "https://github.com/ApexLTD/pydevtools.git#main"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "*"
