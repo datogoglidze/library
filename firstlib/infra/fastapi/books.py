@@ -1,7 +1,7 @@
 from typing import Any
 from uuid import UUID, uuid4
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Request, Depends
 from pydantic import BaseModel
 from starlette.responses import JSONResponse
 
@@ -15,7 +15,9 @@ from firstlib.infra.fastapi.response import (
 
 books_api = APIRouter(tags=["Books"])
 
-shelf: list[dict[str, Any]] = []
+
+def get_book_repository(request: Request) -> list[dict[str, Any]]:
+    return request.app.state.books
 
 
 class BookCreateRequest(BaseModel):
@@ -51,7 +53,10 @@ class BookListEnvelope(BaseModel):
     status_code=201,
     response_model=Response[BookItemEnvelope],
 )
-def create(request: BookCreateRequest) -> JSONResponse | dict[str, Any]:
+def create(
+    request: BookCreateRequest,
+    books: list[dict[str, Any]] = Depends(get_book_repository),
+) -> JSONResponse | dict[str, Any]:
     book = {
         "id": uuid4(),
         "name": request.name,
@@ -62,14 +67,14 @@ def create(request: BookCreateRequest) -> JSONResponse | dict[str, Any]:
         "year": request.year,
     }
 
-    for book_info in shelf:
+    for book_info in books:
         if book_info["isbn"] == book["isbn"]:
             return ResourceExists(
                 f"Book with ISBN<{book_info['isbn']}> already exists.",
                 book={"id": str(book_info["id"])},
             )
 
-    shelf.append(book)
+    books.append(book)
 
     return ResourceCreated(book=book)
 
@@ -79,8 +84,10 @@ def create(request: BookCreateRequest) -> JSONResponse | dict[str, Any]:
     status_code=200,
     response_model=Response[BookListEnvelope],
 )
-def read_all() -> ResourceFound:
-    return ResourceFound(books=shelf, count=len(shelf))
+def read_all(
+    books: list[dict[str, Any]] = Depends(get_book_repository),
+) -> ResourceFound:
+    return ResourceFound(books=books, count=len(books))
 
 
 @books_api.get(
@@ -88,8 +95,11 @@ def read_all() -> ResourceFound:
     status_code=200,
     response_model=Response[BookItemEnvelope],
 )
-def read_one(book_id: UUID) -> ResourceFound | ResourceNotFound:
-    for book_info in shelf:
+def read_one(
+    book_id: UUID,
+    books: list[dict[str, Any]] = Depends(get_book_repository),
+) -> ResourceFound | ResourceNotFound:
+    for book_info in books:
         if book_info["id"] == book_id:
             return ResourceFound(book=book_info)
 

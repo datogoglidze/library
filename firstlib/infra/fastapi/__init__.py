@@ -17,8 +17,9 @@ class FastApiConfig:
     def setup(self) -> FastAPI:
         app = FastAPI()
 
-        app.state.publishers = []
+        app.state.books = []
         app.state.authors = []
+        app.state.publishers = []
 
         app.include_router(books_api, prefix="/books")
         app.include_router(authors_api, prefix="/authors")
