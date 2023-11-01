@@ -1,7 +1,7 @@
 from typing import Any
 from uuid import UUID, uuid4
 
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel
 from starlette.responses import JSONResponse
 
