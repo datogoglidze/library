@@ -7,8 +7,6 @@ from firstlib.infra.fastapi.authors import authors_api
 from firstlib.infra.fastapi.books import books_api
 from firstlib.infra.fastapi.publishers import publishers_api
 
-JsonDict = dict[str, Any]
-
 
 @dataclass
 class FastApiConfig:
