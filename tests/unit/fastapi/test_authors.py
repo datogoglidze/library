@@ -1,35 +1,26 @@
 from unittest.mock import ANY
 
-import pytest
-from fastapi.testclient import TestClient
-
-from firstlib.infra.fastapi import FastApiConfig
 from firstlib.infra.fastapi.authors import all_authors
-from tests.client import RestfulName, RestResource
+from tests.client import FirstlibApi
 from tests.unit.fastapi.fake import Fake
 
 fake = Fake()
 
 
-@pytest.fixture
-def authors() -> RestResource:
-    return RestResource(TestClient(FastApiConfig().setup()), RestfulName("author"))
-
-
-def test_should_create(authors: RestResource) -> None:
+def test_should_create(firstlib: FirstlibApi) -> None:
     author = fake.author()
 
-    authors.create_one(
+    firstlib.authors.create_one(
         from_data=author,
     ).assert_created(
         author={"id": ANY, **author},
     )
 
 
-def test_should_not_duplicate(authors: RestResource) -> None:
-    author = authors.create_one(fake.author())
+def test_should_not_duplicate(firstlib: FirstlibApi) -> None:
+    author = firstlib.authors.create_one(fake.author())
 
-    authors.create_one(
+    firstlib.authors.create_one(
         from_data=author.unpack(exclude=["id"]),
     ).assert_conflict(
         with_message=f"Author with name<{author['name']}> already exists.",
@@ -37,33 +28,33 @@ def test_should_not_duplicate(authors: RestResource) -> None:
     )
 
 
-def test_should_list_all_created(authors: RestResource) -> None:
+def test_should_list_all_created(firstlib: FirstlibApi) -> None:
     all_authors.clear()
 
     fake_authors = [
-        authors.create_one(fake.author()).unpack(),
-        authors.create_one(fake.author()).unpack(),
+        firstlib.authors.create_one(fake.author()).unpack(),
+        firstlib.authors.create_one(fake.author()).unpack(),
     ]
 
-    authors.read_all().assert_ok(authors=fake_authors, count=len(fake_authors))
+    firstlib.authors.read_all().assert_ok(authors=fake_authors, count=len(fake_authors))
 
 
-def test_should_read_one(authors: RestResource) -> None:
-    author = authors.create_one(fake.author())
+def test_should_read_one(firstlib: FirstlibApi) -> None:
+    author = firstlib.authors.create_one(fake.author())
 
-    authors.read_one(with_id=author["id"]).assert_ok(author=author.unpack())
+    firstlib.authors.read_one(with_id=author["id"]).assert_ok(author=author.unpack())
 
 
-def test_should_not_list_anything_when_none_exists(authors: RestResource) -> None:
+def test_should_not_list_anything_when_none_exists(firstlib: FirstlibApi) -> None:
     all_authors.clear()
 
-    authors.read_all().assert_ok(authors=[], count=0)
+    firstlib.authors.read_all().assert_ok(authors=[], count=0)
 
 
-def test_should_not_read_unknown(authors: RestResource) -> None:
+def test_should_not_read_unknown(firstlib: FirstlibApi) -> None:
     unknown_author_id = fake.uuid()
 
-    authors.read_one(
+    firstlib.authors.read_one(
         with_id=unknown_author_id,
     ).assert_not_found(
         with_message=f"Author with id<{unknown_author_id}> does not exist.",
