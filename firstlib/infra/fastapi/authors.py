@@ -16,7 +16,7 @@ from firstlib.infra.fastapi.response import (
 authors_api = APIRouter(tags=["Authors"])
 
 
-def get_author_repository(request: Request) -> list[dict[str, Any]]:
+def get_author_repository(request: Request) -> Any:
     return request.app.state.authors
 
 

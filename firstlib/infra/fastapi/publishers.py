@@ -16,7 +16,7 @@ from firstlib.infra.fastapi.response import (
 publishers_api = APIRouter(tags=["Publishers"])
 
 
-def get_publisher_repository(request: Request) -> list[dict[str, Any]]:
+def get_publisher_repository(request: Request) -> Any:
     return request.app.state.publishers
 
 

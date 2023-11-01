@@ -16,7 +16,7 @@ from firstlib.infra.fastapi.response import (
 books_api = APIRouter(tags=["Books"])
 
 
-def get_book_repository(request: Request) -> list[dict[str, Any]]:
+def get_book_repository(request: Request) -> Any:
     return request.app.state.books
 
 
