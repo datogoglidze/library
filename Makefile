@@ -4,7 +4,7 @@ help:
 install:
 	python -m pip install --upgrade pip
 	python -m pip install --upgrade poetry
-	poetry install
+	poetry install --no-root
 
 lock:
 	poetry lock --no-update
