@@ -1,10 +1,11 @@
-from typing import Any
 from uuid import UUID, uuid4
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter
 from pydantic import BaseModel
-from starlette.responses import JSONResponse
 
+from firstlib.core.book import Book
+from firstlib.core.errors import DoesNotExistError, ExistsError
+from firstlib.infra.fastapi.dependable import BookRepositoryDependable
 from firstlib.infra.fastapi.docs import Response
 from firstlib.infra.fastapi.response import (
     ResourceCreated,
@@ -14,10 +15,6 @@ from firstlib.infra.fastapi.response import (
 )
 
 books_api = APIRouter(tags=["Books"])
-
-
-def get_book_repository(request: Request) -> Any:
-    return request.app.state.books
 
 
 class BookCreateRequest(BaseModel):
@@ -55,26 +52,20 @@ class BookListEnvelope(BaseModel):
 )
 def create(
     request: BookCreateRequest,
-    books: list[dict[str, Any]] = Depends(get_book_repository),
-) -> JSONResponse | dict[str, Any]:
-    book = {
-        "id": uuid4(),
-        "name": request.name,
-        "author": request.author,
-        "isbn": request.isbn,
-        "publisher": request.publisher,
-        "total_pages": request.total_pages,
-        "year": request.year,
-    }
+    books: BookRepositoryDependable,
+) -> ResourceCreated | ResourceExists:
+    book = Book(
+        id=uuid4(),
+        **request.model_dump(),
+    )
 
-    for book_info in books:
-        if book_info["isbn"] == book["isbn"]:
-            return ResourceExists(
-                f"Book with ISBN<{book_info['isbn']}> already exists.",
-                book={"id": str(book_info["id"])},
-            )
-
-    books.append(book)
+    try:
+        books.create(book)
+    except ExistsError as e:
+        return ResourceExists(
+            f"Book with ISBN<{book.isbn}> already exists.",
+            book={"id": str(e.id)},
+        )
 
     return ResourceCreated(book=book)
 
@@ -84,10 +75,8 @@ def create(
     status_code=200,
     response_model=Response[BookListEnvelope],
 )
-def read_all(
-    books: list[dict[str, Any]] = Depends(get_book_repository),
-) -> ResourceFound:
-    return ResourceFound(books=books, count=len(books))
+def read_all(books: BookRepositoryDependable) -> ResourceFound:
+    return ResourceFound(books=list(books), count=len(books))
 
 
 @books_api.get(
@@ -97,10 +86,11 @@ def read_all(
 )
 def read_one(
     book_id: UUID,
-    books: list[dict[str, Any]] = Depends(get_book_repository),
+    books: BookRepositoryDependable,
 ) -> ResourceFound | ResourceNotFound:
-    for book_info in books:
-        if book_info["id"] == book_id:
-            return ResourceFound(book=book_info)
+    try:
+        return ResourceFound(book=books.read(book_id))
+    except DoesNotExistError:
+        pass
 
     return ResourceNotFound(f"Book with id<{book_id}> does not exist.")
