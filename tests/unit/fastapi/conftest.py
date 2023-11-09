@@ -5,9 +5,7 @@ from firstlib.core.authors import Author
 from firstlib.core.book import Book
 from firstlib.core.publishers import Publisher
 from firstlib.infra.fastapi import FastApiConfig
-from firstlib.infra.http import Httpx
 from firstlib.infra.in_memory import InMemoryRepository
-from tests.client import FirstlibApi
 
 
 @fixture
@@ -19,8 +17,3 @@ def http() -> TestClient:
             publishers=InMemoryRepository[Publisher](),
         ).setup()
     )
-
-
-@fixture
-def firstlib(http: Httpx) -> FirstlibApi:
-    return FirstlibApi(http)
