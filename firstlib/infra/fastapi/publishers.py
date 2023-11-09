@@ -1,23 +1,20 @@
-from typing import Any
 from uuid import UUID, uuid4
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter
 from pydantic import BaseModel
-from starlette.responses import JSONResponse
-
-from firstlib.infra.fastapi.docs import Response
-from firstlib.infra.fastapi.response import (
+from pydevtools.error import DoesNotExistError, ExistsError
+from pydevtools.fastapi import (
     ResourceCreated,
     ResourceExists,
     ResourceFound,
     ResourceNotFound,
+    Response,
 )
 
+from firstlib.core.publishers import Publisher
+from firstlib.infra.fastapi.dependable import PublisherRepositoryDependable
+
 publishers_api = APIRouter(tags=["Publishers"])
-
-
-def get_publisher_repository(request: Request) -> Any:
-    return request.app.state.publishers
 
 
 class PublisherCreateRequest(BaseModel):
@@ -45,24 +42,22 @@ class PublisherListEnvelope(BaseModel):
     status_code=201,
     response_model=Response[PublisherItemEnvelope],
 )
-def create_publisher(
+def create(
     request: PublisherCreateRequest,
-    publishers: list[dict[str, Any]] = Depends(get_publisher_repository),
-) -> JSONResponse | dict[str, Any]:
-    publisher = {
-        "id": uuid4(),
-        "name": request.name,
-        "country": request.country,
-    }
+    publishers: PublisherRepositoryDependable,
+) -> ResourceCreated | ResourceExists:
+    publisher = Publisher(
+        id=uuid4(),
+        **request.model_dump(),
+    )
 
-    for publisher_info in publishers:
-        if publisher_info["name"] == publisher["name"]:
-            return ResourceExists(
-                f"Publisher with name<{publisher_info['name']}> already exists.",
-                publisher={"id": str(publisher_info["id"])},
-            )
-
-    publishers.append(publisher)
+    try:
+        publishers.create(publisher)
+    except ExistsError as e:
+        return ResourceExists(
+            f"Publisher with name<{publisher.name}> already exists.",
+            publisher={"id": str(e.id)},
+        )
 
     return ResourceCreated(publisher=publisher)
 
@@ -72,10 +67,8 @@ def create_publisher(
     status_code=200,
     response_model=Response[PublisherListEnvelope],
 )
-def read_all(
-    publishers: list[dict[str, Any]] = Depends(get_publisher_repository),
-) -> ResourceFound:
-    return ResourceFound(publishers=publishers, count=len(publishers))
+def read_all(publishers: PublisherRepositoryDependable) -> ResourceFound:
+    return ResourceFound(publishers=list(publishers), count=len(publishers))
 
 
 @publishers_api.get(
@@ -85,10 +78,10 @@ def read_all(
 )
 def read_one(
     publisher_id: UUID,
-    publishers: list[dict[str, Any]] = Depends(get_publisher_repository),
+    publishers: PublisherRepositoryDependable,
 ) -> ResourceFound | ResourceNotFound:
-    for publisher_info in publishers:
-        if publisher_info["id"] == publisher_id:
-            return ResourceFound(publisher=publisher_info)
-
+    try:
+        return ResourceFound(publisher=publishers.read(publisher_id))
+    except DoesNotExistError:
+        pass
     return ResourceNotFound(f"Publisher with id<{publisher_id}> does not exist.")
