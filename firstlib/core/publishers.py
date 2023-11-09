@@ -12,9 +12,6 @@ class PublisherRepository(Protocol):  # pragma: no cover
     def read(self, publisher_id: UUID) -> Publisher:
         pass
 
-    def update(self, publisher: Publisher) -> None:
-        pass
-
     def __iter__(self) -> Iterator[Publisher]:
         pass
 

@@ -12,9 +12,6 @@ class AuthorRepository(Protocol):  # pragma: no cover
     def read(self, author_id: UUID) -> Author:
         pass
 
-    def update(self, author: Author) -> None:
-        pass
-
     def __iter__(self) -> Iterator[Author]:
         pass
 

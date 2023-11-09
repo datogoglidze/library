@@ -12,9 +12,6 @@ class BookRepository(Protocol):  # pragma: no cover
     def read(self, book_id: UUID) -> Book:
         pass
 
-    def update(self, book: Book) -> None:
-        pass
-
     def __iter__(self) -> Iterator[Book]:
         pass
 
