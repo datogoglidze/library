@@ -28,13 +28,13 @@ def test_should_not_duplicate(firstlib: FirstlibApi) -> None:
 
 
 def test_should_list_all_created(firstlib: FirstlibApi) -> None:
-    fake_publishers = [
+    publishers = [
         firstlib.publishers.create_one(fake.publisher()).unpack(),
         firstlib.publishers.create_one(fake.publisher()).unpack(),
     ]
 
     firstlib.publishers.read_all().assert_ok(
-        publishers=fake_publishers, count=len(fake_publishers)
+        publishers=publishers, count=len(publishers)
     )
 
 
