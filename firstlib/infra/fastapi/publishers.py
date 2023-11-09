@@ -42,7 +42,7 @@ class PublisherListEnvelope(BaseModel):
     status_code=201,
     response_model=Response[PublisherItemEnvelope],
 )
-def create_publisher(
+def create(
     request: PublisherCreateRequest,
     publishers: PublisherRepositoryDependable,
 ) -> ResourceCreated | ResourceExists:

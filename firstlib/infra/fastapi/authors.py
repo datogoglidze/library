@@ -46,7 +46,7 @@ class AuthorListEnvelope(BaseModel):
     status_code=201,
     response_model=Response[AuthorItemEnvelope],
 )
-def create_author(
+def create(
     request: AuthorCreateRequest,
     authors: AuthorRepositoryDependable,
 ) -> ResourceCreated | ResourceExists:
