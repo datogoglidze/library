@@ -2,17 +2,17 @@ from uuid import UUID, uuid4
 
 from fastapi import APIRouter
 from pydantic import BaseModel
-
-from firstlib.core.authors import Author
-from firstlib.core.errors import DoesNotExistError, ExistsError
-from firstlib.infra.fastapi.dependable import AuthorRepositoryDependable
-from firstlib.infra.fastapi.docs import Response
-from firstlib.infra.fastapi.response import (
+from pydevtools.error import DoesNotExistError, ExistsError
+from pydevtools.fastapi import (
     ResourceCreated,
     ResourceExists,
     ResourceFound,
     ResourceNotFound,
+    Response,
 )
+
+from firstlib.core.authors import Author
+from firstlib.infra.fastapi.dependable import AuthorRepositoryDependable
 
 authors_api = APIRouter(tags=["Authors"])
 
