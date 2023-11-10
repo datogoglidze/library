@@ -99,7 +99,5 @@ def read_one(
 ) -> ResourceFound | ResourceNotFound:
     try:
         return ResourceFound(book=books.read(book_id))
-    except DoesNotExistError:
-        pass
-
-    return ResourceNotFound(f"Book with id<{book_id}> does not exist.")
+    except DoesNotExistError as e:
+        return ResourceNotFound(f"Book with id<{e.id}> does not exist.")

@@ -40,8 +40,7 @@ def test_should_create(books_api: RestResource, author_id: str) -> None:
 
 
 def test_should_not_duplicate(books_api: RestResource, author_id: str) -> None:
-    book = fake.book(author_id)
-    books_api.create_one().from_data(book).unpack()
+    book = dict(books_api.create_one().from_data(fake.book(author_id)).unpack())
 
     (
         books_api.create_one()
@@ -114,11 +113,10 @@ def test_create_with_author(books_api: RestResource, author_id: str) -> None:
 
 def test_should_not_create_with_unknown_author(books_api: RestResource) -> None:
     unknown_author_id = fake.uuid()
-    book = fake.book(unknown_author_id)
 
     (
         books_api.create_one()
-        .from_data(book)
+        .from_data(fake.book(unknown_author_id))
         .ensure()
         .fail()
         .with_code(404)
