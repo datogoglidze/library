@@ -28,8 +28,7 @@ def test_should_create(authors_api: RestResource) -> None:
 
 
 def test_should_not_duplicate(authors_api: RestResource) -> None:
-    author = fake.author()
-    authors_api.create_one().from_data(author).unpack()
+    author = dict(authors_api.create_one().from_data(fake.author()).unpack())
 
     (
         authors_api.create_one()
@@ -58,16 +57,15 @@ def test_should_list_all_created(authors_api: RestResource) -> None:
 
 
 def test_should_read_one(authors_api: RestResource) -> None:
-    author = fake.author()
-    id_ = authors_api.create_one().from_data(author).unpack().value_of("id").to(str)
+    author = dict(authors_api.create_one().from_data(fake.author()).unpack())
 
     (
         authors_api.read_one()
-        .with_id(id_)
+        .with_id(author["id"])
         .ensure()
         .success()
         .with_code(200)
-        .and_data(author={"id": id_, **author})
+        .and_data(author={"id": author["id"], **author})
     )
 
 
