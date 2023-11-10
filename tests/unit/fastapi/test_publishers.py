@@ -28,8 +28,7 @@ def test_should_create(publishers_api: RestResource) -> None:
 
 
 def test_should_not_duplicate(publishers_api: RestResource) -> None:
-    publisher = fake.publisher()
-    publishers_api.create_one().from_data(publisher).unpack()
+    publisher = dict(publishers_api.create_one().from_data(fake.publisher()).unpack())
 
     (
         publishers_api.create_one()
@@ -58,18 +57,15 @@ def test_should_list_all_created(publishers_api: RestResource) -> None:
 
 
 def test_should_read_one(publishers_api: RestResource) -> None:
-    publisher = fake.publisher()
-    id_ = (
-        publishers_api.create_one().from_data(publisher).unpack().value_of("id").to(str)
-    )
+    publisher = dict(publishers_api.create_one().from_data(fake.publisher()).unpack())
 
     (
         publishers_api.read_one()
-        .with_id(id_)
+        .with_id(publisher["id"])
         .ensure()
         .success()
         .with_code(200)
-        .and_data(publisher={"id": id_, **publisher})
+        .and_data(publisher={"id": publisher["id"], **publisher})
     )
 
 
