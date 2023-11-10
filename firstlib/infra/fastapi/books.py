@@ -12,14 +12,17 @@ from pydevtools.fastapi import (
 )
 
 from firstlib.core.book import Book
-from firstlib.infra.fastapi.dependable import BookRepositoryDependable
+from firstlib.infra.fastapi.dependable import (
+    AuthorRepositoryDependable,
+    BookRepositoryDependable,
+)
 
 books_api = APIRouter(tags=["Books"])
 
 
 class BookCreateRequest(BaseModel):
     name: str
-    author: str
+    author_id: UUID
     isbn: str
     publisher: str
     total_pages: int
@@ -29,7 +32,7 @@ class BookCreateRequest(BaseModel):
 class BookItem(BaseModel):
     id: UUID
     name: str
-    author: str
+    author_id: UUID
     isbn: str
     publisher: str
     total_pages: int
@@ -52,8 +55,14 @@ class BookListEnvelope(BaseModel):
 )
 def create(
     request: BookCreateRequest,
+    authors: AuthorRepositoryDependable,
     books: BookRepositoryDependable,
-) -> ResourceCreated | ResourceExists:
+) -> ResourceCreated | ResourceExists | ResourceNotFound:
+    try:
+        authors.read(request.author_id)
+    except DoesNotExistError as e:
+        return ResourceNotFound(f"Author with id<{e.id}> does not exist.")
+
     book = Book(
         id=uuid4(),
         **request.model_dump(),

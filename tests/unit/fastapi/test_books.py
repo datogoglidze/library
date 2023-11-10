@@ -14,8 +14,20 @@ def books_api(http: Httpx) -> RestResource:
     return RestResource(http, RestfulName("book"))
 
 
-def test_should_create(books_api: RestResource) -> None:
-    book = fake.book()
+@pytest.fixture
+def author_id(http: Httpx) -> str:
+    return str(
+        RestResource(http, RestfulName("author"))
+        .create_one()
+        .from_data(fake.author())
+        .unpack()
+        .value_of("id")
+        .to(str)
+    )
+
+
+def test_should_create(books_api: RestResource, author_id: str) -> None:
+    book = fake.book(author_id)
 
     (
         books_api.create_one()
@@ -27,8 +39,8 @@ def test_should_create(books_api: RestResource) -> None:
     )
 
 
-def test_should_not_duplicate(books_api: RestResource) -> None:
-    book = fake.book()
+def test_should_not_duplicate(books_api: RestResource, author_id: str) -> None:
+    book = fake.book(author_id)
     books_api.create_one().from_data(book).unpack()
 
     (
@@ -42,10 +54,10 @@ def test_should_not_duplicate(books_api: RestResource) -> None:
     )
 
 
-def test_should_list_all_created(books_api: RestResource) -> None:
+def test_should_list_all_created(books_api: RestResource, author_id: str) -> None:
     books = [
-        dict(books_api.create_one().from_data(fake.book()).unpack()),
-        dict(books_api.create_one().from_data(fake.book()).unpack()),
+        dict(books_api.create_one().from_data(fake.book(author_id)).unpack()),
+        dict(books_api.create_one().from_data(fake.book(author_id)).unpack()),
     ]
 
     (
@@ -57,17 +69,16 @@ def test_should_list_all_created(books_api: RestResource) -> None:
     )
 
 
-def test_should_read_one(books_api: RestResource) -> None:
-    book = fake.book()
-    id_ = books_api.create_one().from_data(book).unpack().value_of("id").to(str)
+def test_should_read_one(books_api: RestResource, author_id: str) -> None:
+    book = dict(books_api.create_one().from_data(fake.book(author_id)).unpack())
 
     (
         books_api.read_one()
-        .with_id(id_)
+        .with_id(book["id"])
         .ensure()
         .success()
         .with_code(200)
-        .and_data(book={"id": id_, **book})
+        .and_data(book={"id": book["id"], **book})
     )
 
 
@@ -85,4 +96,31 @@ def test_should_not_read_unknown(books_api: RestResource) -> None:
         .fail()
         .with_code(404)
         .and_message(f"Book with id<{unknown_book_id}> does not exist.")
+    )
+
+
+def test_create_with_author(books_api: RestResource, author_id: str) -> None:
+    book = fake.book(author_id)
+
+    (
+        books_api.create_one()
+        .from_data(book)
+        .ensure()
+        .success()
+        .with_code(201)
+        .with_data(book={"id": ANY, **book})
+    )
+
+
+def test_should_not_create_with_unknown_author(books_api: RestResource) -> None:
+    unknown_author_id = fake.uuid()
+    book = fake.book(unknown_author_id)
+
+    (
+        books_api.create_one()
+        .from_data(book)
+        .ensure()
+        .fail()
+        .with_code(404)
+        .with_message(f"Author with id<{unknown_author_id}> does not exist.")
     )

@@ -23,7 +23,7 @@ class BookRepository(Protocol):  # pragma: no cover
 class Book:
     id: UUID
     name: str
-    author: str
+    author_id: UUID
     isbn: str
     publisher: str
     total_pages: int

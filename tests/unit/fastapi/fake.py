@@ -13,10 +13,10 @@ class Fake:
     def uuid(self) -> str:
         return str(self.faker.uuid4())
 
-    def book(self) -> dict[str, Any]:
+    def book(self, author_id: str) -> dict[str, Any]:
         return {
             "name": str(self.faker.job()),
-            "author": str(self.faker.first_name()),
+            "author_id": author_id,
             "isbn": str(self.faker.isbn13()),
             "publisher": str(self.faker.company()),
             "total_pages": int(self.faker.random_digit_not_null()),
