@@ -25,7 +25,7 @@ class Book:
     name: str
     author_id: UUID
     isbn: str
-    publisher: str
+    publisher_id: UUID
     total_pages: int
     year: int
 
