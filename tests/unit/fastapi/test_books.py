@@ -39,7 +39,9 @@ def publisher_id(http: Httpx) -> str:
 
 
 def test_should_create(
-    books_api: RestResource, author_id: str, publisher_id: str
+    books_api: RestResource,
+    author_id: str,
+    publisher_id: str,
 ) -> None:
     book = fake.book(author_id, publisher_id)
 
@@ -74,7 +76,9 @@ def test_should_not_duplicate(
 
 
 def test_should_list_all_created(
-    books_api: RestResource, author_id: str, publisher_id: str
+    books_api: RestResource,
+    author_id: str,
+    publisher_id: str,
 ) -> None:
     books = [
         dict(
@@ -118,7 +122,7 @@ def test_should_read_one(
 
 
 def test_should_not_list_anything_when_none_exists(books_api: RestResource) -> None:
-    (books_api.read_all().ensure().success().with_code(200).and_data(books=[], count=0))
+    books_api.read_all().ensure().success().with_code(200).and_data(books=[], count=0)
 
 
 def test_should_not_read_unknown(books_api: RestResource) -> None:
@@ -152,13 +156,15 @@ def test_create_with_author(
 
 
 def test_should_not_create_with_unknown_author(
-    books_api: RestResource, publisher_id: str
+    books_api: RestResource,
+    publisher_id: str,
 ) -> None:
     unknown_author_id = fake.uuid()
+    book = fake.book(unknown_author_id, publisher_id)
 
     (
         books_api.create_one()
-        .from_data(fake.book(unknown_author_id, publisher_id))
+        .from_data(book)
         .ensure()
         .fail()
         .with_code(404)
@@ -188,10 +194,11 @@ def test_should_not_create_with_unknown_publisher(
     author_id: str,
 ) -> None:
     unknown_publisher_id = fake.uuid()
+    book = fake.book(author_id, unknown_publisher_id)
 
     (
         books_api.create_one()
-        .from_data(fake.book(author_id, unknown_publisher_id))
+        .from_data(book)
         .ensure()
         .fail()
         .with_code(404)
