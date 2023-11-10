@@ -26,8 +26,22 @@ def author_id(http: Httpx) -> str:
     )
 
 
-def test_should_create(books_api: RestResource, author_id: str) -> None:
-    book = fake.book(author_id)
+@pytest.fixture
+def publisher_id(http: Httpx) -> str:
+    return str(
+        RestResource(http, RestfulName("publisher"))
+        .create_one()
+        .from_data(fake.publisher())
+        .unpack()
+        .value_of("id")
+        .to(str)
+    )
+
+
+def test_should_create(
+    books_api: RestResource, author_id: str, publisher_id: str
+) -> None:
+    book = fake.book(author_id, publisher_id)
 
     (
         books_api.create_one()
@@ -39,8 +53,14 @@ def test_should_create(books_api: RestResource, author_id: str) -> None:
     )
 
 
-def test_should_not_duplicate(books_api: RestResource, author_id: str) -> None:
-    book = dict(books_api.create_one().from_data(fake.book(author_id)).unpack())
+def test_should_not_duplicate(
+    books_api: RestResource,
+    author_id: str,
+    publisher_id: str,
+) -> None:
+    book = dict(
+        books_api.create_one().from_data(fake.book(author_id, publisher_id)).unpack()
+    )
 
     (
         books_api.create_one()
@@ -53,10 +73,20 @@ def test_should_not_duplicate(books_api: RestResource, author_id: str) -> None:
     )
 
 
-def test_should_list_all_created(books_api: RestResource, author_id: str) -> None:
+def test_should_list_all_created(
+    books_api: RestResource, author_id: str, publisher_id: str
+) -> None:
     books = [
-        dict(books_api.create_one().from_data(fake.book(author_id)).unpack()),
-        dict(books_api.create_one().from_data(fake.book(author_id)).unpack()),
+        dict(
+            books_api.create_one()
+            .from_data(fake.book(author_id, publisher_id))
+            .unpack()
+        ),
+        dict(
+            books_api.create_one()
+            .from_data(fake.book(author_id, publisher_id))
+            .unpack()
+        ),
     ]
 
     (
@@ -68,8 +98,14 @@ def test_should_list_all_created(books_api: RestResource, author_id: str) -> Non
     )
 
 
-def test_should_read_one(books_api: RestResource, author_id: str) -> None:
-    book = dict(books_api.create_one().from_data(fake.book(author_id)).unpack())
+def test_should_read_one(
+    books_api: RestResource,
+    author_id: str,
+    publisher_id: str,
+) -> None:
+    book = dict(
+        books_api.create_one().from_data(fake.book(author_id, publisher_id)).unpack()
+    )
 
     (
         books_api.read_one()
@@ -98,8 +134,12 @@ def test_should_not_read_unknown(books_api: RestResource) -> None:
     )
 
 
-def test_create_with_author(books_api: RestResource, author_id: str) -> None:
-    book = fake.book(author_id)
+def test_create_with_author(
+    books_api: RestResource,
+    author_id: str,
+    publisher_id: str,
+) -> None:
+    book = fake.book(author_id, publisher_id)
 
     (
         books_api.create_one()
@@ -111,14 +151,49 @@ def test_create_with_author(books_api: RestResource, author_id: str) -> None:
     )
 
 
-def test_should_not_create_with_unknown_author(books_api: RestResource) -> None:
+def test_should_not_create_with_unknown_author(
+    books_api: RestResource, publisher_id: str
+) -> None:
     unknown_author_id = fake.uuid()
 
     (
         books_api.create_one()
-        .from_data(fake.book(unknown_author_id))
+        .from_data(fake.book(unknown_author_id, publisher_id))
         .ensure()
         .fail()
         .with_code(404)
         .with_message(f"Author with id<{unknown_author_id}> does not exist.")
+    )
+
+
+def test_create_with_publisher(
+    books_api: RestResource,
+    author_id: str,
+    publisher_id: str,
+) -> None:
+    book = fake.book(author_id, publisher_id)
+
+    (
+        books_api.create_one()
+        .from_data(book)
+        .ensure()
+        .success()
+        .with_code(201)
+        .with_data(book={"id": ANY, **book})
+    )
+
+
+def test_should_not_create_with_unknown_publisher(
+    books_api: RestResource,
+    author_id: str,
+) -> None:
+    unknown_publisher_id = fake.uuid()
+
+    (
+        books_api.create_one()
+        .from_data(fake.book(author_id, unknown_publisher_id))
+        .ensure()
+        .fail()
+        .with_code(404)
+        .with_message(f"Publisher with id<{unknown_publisher_id}> does not exist.")
     )
