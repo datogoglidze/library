@@ -26,8 +26,3 @@ class Author:
     birth_date: str
     death_date: str
     bio: str
-
-    def __eq__(self, other: object) -> bool:
-        assert isinstance(other, Author), f"Cannot compare to {type(other)}"
-
-        return self.name == other.name

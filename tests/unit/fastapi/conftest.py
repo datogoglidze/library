@@ -12,8 +12,8 @@ from firstlib.infra.fastapi import FastApiConfig
 def http() -> TestClient:
     return TestClient(
         FastApiConfig(
-            books=InMemoryRepository[Book](),
-            authors=InMemoryRepository[Author](),
-            publishers=InMemoryRepository[Publisher](),
+            books=InMemoryRepository[Book]().with_unique("isbn"),
+            authors=InMemoryRepository[Author]().with_unique("name"),
+            publishers=InMemoryRepository[Publisher]().with_unique("name"),
         ).setup()
     )
