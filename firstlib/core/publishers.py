@@ -24,8 +24,3 @@ class Publisher:
     id: UUID
     name: str
     country: str
-
-    def __eq__(self, other: object) -> bool:
-        assert isinstance(other, Publisher), f"Cannot compare to {type(other)}"
-
-        return self.name == other.name

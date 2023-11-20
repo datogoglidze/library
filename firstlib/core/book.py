@@ -28,8 +28,3 @@ class Book:
     publisher_id: UUID
     total_pages: int
     year: int
-
-    def __eq__(self, other: object) -> bool:
-        assert isinstance(other, Book), f"Cannot compare to {type(other)}"
-
-        return self.isbn == other.isbn
