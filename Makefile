@@ -34,4 +34,4 @@ unit-test-ci:
 	poetry run pytest tests/unit
 
 run:
-	python -m firstlib.runner --host localhost --port 8000
+	python -m firstlib.runner --host localhost --port 8100
