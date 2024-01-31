@@ -51,7 +51,7 @@ def test_should_create(
         .ensure()
         .success()
         .with_code(201)
-        .with_data(book={"id": ANY, **book})
+        .and_data(book.with_a(id=ANY))
     )
 
 
@@ -60,9 +60,8 @@ def test_should_not_duplicate(
     author_id: str,
     publisher_id: str,
 ) -> None:
-    book = dict(
-        books_api.create_one().from_data(fake.book(author_id, publisher_id)).unpack()
-    )
+    book = books_api.create_one().from_data(fake.book(author_id, publisher_id)).unpack()
+    book_isbn = book.value_of("isbn").to(str)
 
     (
         books_api.create_one()
@@ -70,8 +69,8 @@ def test_should_not_duplicate(
         .ensure()
         .fail()
         .with_code(409)
-        .and_message(f"Book with ISBN<{book['isbn']}> already exists.")
-        .and_data(book={"id": ANY})
+        .and_message(f"Book with ISBN<{book_isbn}> already exists.")
+        .and_data(book.select("id"))
     )
 
 
@@ -81,25 +80,11 @@ def test_should_list_all_created(
     publisher_id: str,
 ) -> None:
     books = [
-        dict(
-            books_api.create_one()
-            .from_data(fake.book(author_id, publisher_id))
-            .unpack()
-        ),
-        dict(
-            books_api.create_one()
-            .from_data(fake.book(author_id, publisher_id))
-            .unpack()
-        ),
+        books_api.create_one().from_data(fake.book(author_id, publisher_id)).unpack(),
+        books_api.create_one().from_data(fake.book(author_id, publisher_id)).unpack(),
     ]
 
-    (
-        books_api.read_all()
-        .ensure()
-        .success()
-        .with_code(200)
-        .and_data(books=books, count=len(books))
-    )
+    books_api.read_all().ensure().success().with_code(200).and_data(*books)
 
 
 def test_should_read_one(
@@ -107,22 +92,20 @@ def test_should_read_one(
     author_id: str,
     publisher_id: str,
 ) -> None:
-    book = dict(
-        books_api.create_one().from_data(fake.book(author_id, publisher_id)).unpack()
-    )
+    book = books_api.create_one().from_data(fake.book(author_id, publisher_id)).unpack()
 
     (
         books_api.read_one()
-        .with_id(book["id"])
+        .with_id(book.value_of("id").to(str))
         .ensure()
         .success()
         .with_code(200)
-        .and_data(book={"id": book["id"], **book})
+        .and_data(book)
     )
 
 
 def test_should_not_list_anything_when_none_exists(books_api: RestResource) -> None:
-    books_api.read_all().ensure().success().with_code(200).and_data(books=[], count=0)
+    books_api.read_all().ensure().success().with_code(200).and_data()
 
 
 def test_should_not_read_unknown(books_api: RestResource) -> None:
@@ -151,7 +134,7 @@ def test_create_with_author(
         .ensure()
         .success()
         .with_code(201)
-        .with_data(book={"id": ANY, **book})
+        .and_data(book.with_a(id=ANY))
     )
 
 
@@ -185,7 +168,7 @@ def test_create_with_publisher(
         .ensure()
         .success()
         .with_code(201)
-        .with_data(book={"id": ANY, **book})
+        .and_data(book.with_a(id=ANY))
     )
 
 
