@@ -23,12 +23,13 @@ def test_should_create(publishers_api: RestResource) -> None:
         .ensure()
         .success()
         .with_code(201)
-        .with_data(publisher={"id": ANY, **publisher})
+        .and_data(publisher.with_a(id=ANY))
     )
 
 
 def test_should_not_duplicate(publishers_api: RestResource) -> None:
-    publisher = dict(publishers_api.create_one().from_data(fake.publisher()).unpack())
+    publisher = publishers_api.create_one().from_data(fake.publisher()).unpack()
+    publisher_name = publisher.value_of("name").to(str)
 
     (
         publishers_api.create_one()
@@ -36,49 +37,37 @@ def test_should_not_duplicate(publishers_api: RestResource) -> None:
         .ensure()
         .fail()
         .with_code(409)
-        .and_message(f"Publisher with name<{publisher['name']}> already exists.")
-        .and_data(publisher={"id": ANY})
+        .and_message(f"Publisher with name<{publisher_name}> already exists.")
+        .and_data(publisher.select("id"))
     )
 
 
 def test_should_list_all_created(publishers_api: RestResource) -> None:
     publishers = [
-        dict(publishers_api.create_one().from_data(fake.publisher()).unpack()),
-        dict(publishers_api.create_one().from_data(fake.publisher()).unpack()),
+        publishers_api.create_one().from_data(fake.publisher()).unpack(),
+        publishers_api.create_one().from_data(fake.publisher()).unpack(),
     ]
 
-    (
-        publishers_api.read_all()
-        .ensure()
-        .success()
-        .with_code(200)
-        .and_data(publishers=publishers, count=len(publishers))
-    )
+    (publishers_api.read_all().ensure().success().with_code(200).and_data(*publishers))
 
 
 def test_should_read_one(publishers_api: RestResource) -> None:
-    publisher = dict(publishers_api.create_one().from_data(fake.publisher()).unpack())
+    publisher = publishers_api.create_one().from_data(fake.publisher()).unpack()
 
     (
         publishers_api.read_one()
-        .with_id(publisher["id"])
+        .with_id(publisher.value_of("id").to(str))
         .ensure()
         .success()
         .with_code(200)
-        .and_data(publisher={"id": publisher["id"], **publisher})
+        .and_data(publisher)
     )
 
 
 def test_should_not_list_anything_when_none_exists(
     publishers_api: RestResource,
 ) -> None:
-    (
-        publishers_api.read_all()
-        .ensure()
-        .success()
-        .with_code(200)
-        .and_data(publishers=[], count=0)
-    )
+    publishers_api.read_all().ensure().success().with_code(200).and_data()
 
 
 def test_should_not_read_unknown(publishers_api: RestResource) -> None:

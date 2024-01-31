@@ -7,13 +7,10 @@ from typing import Any, Self
 import typer
 import uvicorn
 from dotenv import load_dotenv
-from pydevtools.repository import InMemoryRepository
-from typer import Typer
+from typer import Typer, echo
 
-from firstlib.core.authors import Author
-from firstlib.core.book import Book
-from firstlib.core.publishers import Publisher
 from firstlib.infra.fastapi import FastApiConfig
+from firstlib.runner.factory import InMemoryInfraFactory
 
 cli = Typer(no_args_is_help=True, add_completion=False)
 
@@ -26,13 +23,14 @@ def run(host: str = "0.0.0.0", port: int = 8100) -> None:
     uvicorn.run(
         host=host,
         port=port,
-        app=FastApiConfig(
-            books=InMemoryRepository[Book](),
-            authors=InMemoryRepository[Author](),
-            publishers=InMemoryRepository[Publisher](),
-        ).setup(),
+        app=FastApiConfig(infra=infra_factory()).setup(),
         log_config=LoggingConfig.from_env().as_dict(),
     )
+
+
+def infra_factory() -> InMemoryInfraFactory:
+    echo("Using in-memory storage...")
+    return InMemoryInfraFactory()
 
 
 @dataclass

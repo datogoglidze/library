@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Protocol
 
 from fastapi import FastAPI
 
@@ -10,18 +11,27 @@ from firstlib.infra.fastapi.books import books_api
 from firstlib.infra.fastapi.publishers import publishers_api
 
 
+class _InfraFactory(Protocol):  # pragma: no cover
+    def authors(self) -> AuthorRepository:
+        pass
+
+    def books(self) -> BookRepository:
+        pass
+
+    def publishers(self) -> PublisherRepository:
+        pass
+
+
 @dataclass
 class FastApiConfig:
-    books: BookRepository
-    authors: AuthorRepository
-    publishers: PublisherRepository
+    infra: _InfraFactory
 
     def setup(self) -> FastAPI:
         app = FastAPI()
 
-        app.state.books = self.books
-        app.state.authors = self.authors
-        app.state.publishers = self.publishers
+        app.state.books = self.infra.books()
+        app.state.authors = self.infra.authors()
+        app.state.publishers = self.infra.publishers()
 
         app.include_router(books_api, prefix="/books")
         app.include_router(authors_api, prefix="/authors")

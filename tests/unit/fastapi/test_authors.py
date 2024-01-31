@@ -23,60 +23,49 @@ def test_should_create(authors_api: RestResource) -> None:
         .ensure()
         .success()
         .with_code(201)
-        .with_data(author={"id": ANY, **author})
+        .and_data(author.with_a(id=ANY))
     )
 
 
 def test_should_not_duplicate(authors_api: RestResource) -> None:
-    author = dict(authors_api.create_one().from_data(fake.author()).unpack())
+    author = authors_api.create_one().from_data(fake.author()).unpack()
+    author_name = author.value_of("name").to(str)
 
     (
         authors_api.create_one()
-        .from_data(author)
+        .from_data(author.drop("id"))
         .ensure()
         .fail()
         .with_code(409)
-        .and_message(f"Author with name<{author['name']}> already exists.")
-        .and_data(author={"id": ANY})
+        .and_message(f"Author with name<{author_name}> already exists.")
+        .and_data(author.select("id"))
     )
 
 
 def test_should_list_all_created(authors_api: RestResource) -> None:
     authors = [
-        dict(authors_api.create_one().from_data(fake.author()).unpack()),
-        dict(authors_api.create_one().from_data(fake.author()).unpack()),
+        authors_api.create_one().from_data(fake.author()).unpack(),
+        authors_api.create_one().from_data(fake.author()).unpack(),
     ]
 
-    (
-        authors_api.read_all()
-        .ensure()
-        .success()
-        .with_code(200)
-        .and_data(authors=authors, count=len(authors))
-    )
+    authors_api.read_all().ensure().success().with_code(200).and_data(*authors)
 
 
 def test_should_read_one(authors_api: RestResource) -> None:
-    author = dict(authors_api.create_one().from_data(fake.author()).unpack())
+    author = authors_api.create_one().from_data(fake.author()).unpack()
 
     (
         authors_api.read_one()
-        .with_id(author["id"])
+        .with_id(author.value_of("id").to(str))
         .ensure()
         .success()
         .with_code(200)
-        .and_data(author={"id": author["id"], **author})
+        .and_data(author)
     )
 
 
 def test_should_not_list_anything_when_none_exists(authors_api: RestResource) -> None:
-    (
-        authors_api.read_all()
-        .ensure()
-        .success()
-        .with_code(200)
-        .and_data(authors=[], count=0)
-    )
+    authors_api.read_all().ensure().success().with_code(200).and_data()
 
 
 def test_should_not_read_unknown(authors_api: RestResource) -> None:
