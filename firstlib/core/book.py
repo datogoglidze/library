@@ -2,14 +2,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Iterator, Protocol
-from uuid import UUID
 
 
 class BookRepository(Protocol):  # pragma: no cover
     def create(self, book: Book) -> None:
         pass
 
-    def read(self, book_id: UUID) -> Book:
+    def read(self, book_id: str) -> Book:
         pass
 
     def __iter__(self) -> Iterator[Book]:
@@ -21,11 +20,11 @@ class BookRepository(Protocol):  # pragma: no cover
 
 @dataclass
 class Book:
-    id: UUID
+    id: str
     name: str
-    author_id: UUID
+    author_id: str
     isbn: str
-    publisher_id: UUID
+    publisher_id: str
     total_pages: int
     year: int
 

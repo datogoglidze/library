@@ -1,4 +1,4 @@
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -25,7 +25,7 @@ class AuthorCreateRequest(BaseModel):
 
 
 class AuthorItem(BaseModel):
-    id: UUID
+    id: str
     name: str
     birth_date: str
     death_date: str
@@ -51,7 +51,7 @@ def create(
     authors: AuthorRepositoryDependable,
 ) -> ResourceCreated | ResourceExists:
     author = Author(
-        id=uuid4(),
+        id=str(uuid4()),
         **request.model_dump(),
     )
 
@@ -81,7 +81,7 @@ def read_all(authors: AuthorRepositoryDependable) -> ResourceFound:
     response_model=Response[AuthorItemEnvelope],
 )
 def read_one(
-    author_id: UUID,
+    author_id: str,
     authors: AuthorRepositoryDependable,
 ) -> ResourceFound | ResourceNotFound:
     try:

@@ -1,4 +1,4 @@
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -23,7 +23,7 @@ class PublisherCreateRequest(BaseModel):
 
 
 class PublisherItem(BaseModel):
-    id: UUID
+    id: str
     name: str
     country: str
 
@@ -47,7 +47,7 @@ def create(
     publishers: PublisherRepositoryDependable,
 ) -> ResourceCreated | ResourceExists:
     publisher = Publisher(
-        id=uuid4(),
+        id=str(uuid4()),
         **request.model_dump(),
     )
 
@@ -77,7 +77,7 @@ def read_all(publishers: PublisherRepositoryDependable) -> ResourceFound:
     response_model=Response[PublisherItemEnvelope],
 )
 def read_one(
-    publisher_id: UUID,
+    publisher_id: str,
     publishers: PublisherRepositoryDependable,
 ) -> ResourceFound | ResourceNotFound:
     try:

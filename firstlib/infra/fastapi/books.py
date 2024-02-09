@@ -1,4 +1,4 @@
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -23,19 +23,19 @@ books_api = APIRouter(tags=["Books"])
 
 class BookCreateRequest(BaseModel):
     name: str
-    author_id: UUID
+    author_id: str
     isbn: str
-    publisher_id: UUID
+    publisher_id: str
     total_pages: int
     year: int
 
 
 class BookItem(BaseModel):
-    id: UUID
+    id: str
     name: str
-    author_id: UUID
+    author_id: str
     isbn: str
-    publisher_id: UUID
+    publisher_id: str
     total_pages: int
     year: int
 
@@ -71,7 +71,7 @@ def create(
         return ResourceNotFound(f"Publisher with id<{e.id}> does not exist.")
 
     book = Book(
-        id=uuid4(),
+        id=str(uuid4()),
         **request.model_dump(),
     )
 
@@ -101,7 +101,7 @@ def read_all(books: BookRepositoryDependable) -> ResourceFound:
     response_model=Response[BookItemEnvelope],
 )
 def read_one(
-    book_id: UUID,
+    book_id: str,
     books: BookRepositoryDependable,
 ) -> ResourceFound | ResourceNotFound:
     try:
