@@ -24,3 +24,6 @@ class Publisher:
     id: UUID
     name: str
     country: str
+
+    def __post_init__(self) -> None:
+        self.name = self.name.lower()
