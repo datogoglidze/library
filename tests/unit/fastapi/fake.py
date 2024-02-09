@@ -17,7 +17,7 @@ class Fake:
     def book(self, author_id: str, publisher_id: str) -> JsonObject[Any]:
         return JsonObject(
             {
-                "name": str(self.faker.job()),
+                "name": self.uuid(),
                 "author_id": author_id,
                 "isbn": str(self.faker.isbn13()),
                 "publisher_id": publisher_id,
@@ -29,7 +29,7 @@ class Fake:
     def author(self) -> JsonObject[Any]:
         return JsonObject(
             {
-                "name": str(self.faker.first_name()),
+                "name": self.uuid(),
                 "birth_date": self.uuid(),
                 "death_date": self.uuid(),
                 "bio": self.uuid(),
