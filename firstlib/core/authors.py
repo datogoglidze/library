@@ -2,14 +2,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Iterator, Protocol
-from uuid import UUID
 
 
 class AuthorRepository(Protocol):  # pragma: no cover
     def create(self, author: Author) -> None:
         pass
 
-    def read(self, author_id: UUID) -> Author:
+    def read(self, author_id: str) -> Author:
         pass
 
     def __iter__(self) -> Iterator[Author]:
