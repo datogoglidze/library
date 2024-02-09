@@ -21,7 +21,7 @@ class AuthorRepository(Protocol):  # pragma: no cover
 
 @dataclass
 class Author:
-    id: UUID
+    id: str
     name: str
     birth_date: str
     death_date: str

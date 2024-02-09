@@ -21,7 +21,7 @@ class PublisherRepository(Protocol):  # pragma: no cover
 
 @dataclass
 class Publisher:
-    id: UUID
+    id: str
     name: str
     country: str
 

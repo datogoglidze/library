@@ -21,11 +21,11 @@ class BookRepository(Protocol):  # pragma: no cover
 
 @dataclass
 class Book:
-    id: UUID
+    id: str
     name: str
-    author_id: UUID
+    author_id: str
     isbn: str
-    publisher_id: UUID
+    publisher_id: str
     total_pages: int
     year: int
 
