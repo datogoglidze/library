@@ -28,3 +28,6 @@ class Book:
     publisher_id: UUID
     total_pages: int
     year: int
+
+    def __post_init__(self) -> None:
+        self.isbn = self.isbn.lower()

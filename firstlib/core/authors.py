@@ -26,3 +26,6 @@ class Author:
     birth_date: str
     death_date: str
     bio: str
+
+    def __post_init__(self) -> None:
+        self.name = self.name.lower()
