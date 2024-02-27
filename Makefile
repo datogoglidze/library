@@ -34,4 +34,17 @@ unit-test-ci:
 	poetry run pytest tests/unit
 
 run:
-	python -m firstlib.runner --host 0.0.0.0 --port 8100
+	python -m firstlib.runner --host 0.0.0.0 --port 8200
+
+build:
+	poetry export --without-hashes --format=requirements.txt > requirements.txt
+	docker build -t library:latest .
+	rm requirements.txt
+
+export:
+	rm -rf dist
+	mkdir dist
+	docker save -o dist/library.tar library:latest
+
+transfer:
+	scp dist/library.tar root@10.10.0.77:/home/apex/Projects/
